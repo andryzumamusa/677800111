@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Link Monitor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;900&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer onload="window.__gsiReady=true" onerror="window.__gsiBlocked=true"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap');
+:root{
+  --bg:#020408;
+  --bg-2:#040810;
+  --panel:#060d18;
+  --panel-2:#081220;
+  --line:#0d2a3f;
+  --line-soft:#0a1e2e;
+  --cyan:#00f5ff;
+  --cyan-dim:#00bcd4;
+  --cyan-deep:#003d4d;
+  --cyan-bg:rgba(0,245,255,.06);
+  --green:#39ff14;--green-bg:rgba(57,255,20,.06);--green-dim:#1aaa00;
+  --amber:#ffcc00;--amber-bg:rgba(255,204,0,.06);--amber-dim:#cc9900;
+  --orange:#ff6600;--orange-bg:rgba(255,102,0,.06);
+  --red:#ff2244;--red-bg:rgba(255,34,68,.06);--red-dim:#cc0022;
+  --gray:#607080;--gray-bg:rgba(96,112,128,.06);
+  --magenta:#ff00aa;--magenta-bg:rgba(255,0,170,.06);
+  --blank:#2a3a4a;--blank-bg:rgba(42,58,74,.06);
+  --text:#c8f0ff;
+  --muted:#4a8099;
+  --muted-2:#2a5060;
+  --glow-c:0 0 8px rgba(0,245,255,.6),0 0 20px rgba(0,245,255,.25);
+  --glow-g:0 0 8px rgba(57,255,20,.6),0 0 20px rgba(57,255,20,.2);
+  --glow-m:0 0 8px rgba(255,0,170,.6),0 0 20px rgba(255,0,170,.2);
+  --glow-r:0 0 8px rgba(255,34,68,.6),0 0 20px rgba(255,34,68,.2);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;-webkit-font-smoothing:antialiased}
+body{
+  background:
+    radial-gradient(ellipse 900px 600px at 90% -10%,rgba(0,245,255,.06),transparent 65%),
+    radial-gradient(ellipse 700px 500px at -5% 110%,rgba(255,0,170,.05),transparent 60%),
+    radial-gradient(ellipse 500px 400px at 50% 50%,rgba(0,30,60,.5),transparent 70%),
+    var(--bg);
+  min-height:100vh;padding:22px clamp(12px,3vw,34px) 60px;
+  background-attachment:fixed;
+}
+/* scanlines overlay */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);animation:scanmove 8s linear infinite}
+@keyframes scanmove{0%{background-position:0 0}100%{background-position:0 100px}}
+/* grid bg */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(0,245,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.03) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.wrap{max-width:1320px;margin:0 auto;position:relative;z-index:1}
+
+/* header */
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+.brand{display:flex;align-items:center;gap:16px}
+.logo{width:48px;height:48px;border-radius:4px;background:transparent;border:1px solid var(--cyan);display:grid;place-items:center;box-shadow:var(--glow-c),inset 0 0 12px rgba(0,245,255,.1);flex:none;animation:pulse-c 3s ease-in-out infinite;position:relative;overflow:hidden}
+.logo::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,245,255,.15),transparent)}
+.logo svg{width:24px;height:24px;filter:drop-shadow(0 0 6px var(--cyan))}
+@keyframes pulse-c{0%,100%{box-shadow:var(--glow-c),inset 0 0 12px rgba(0,245,255,.1)}50%{box-shadow:0 0 16px rgba(0,245,255,.9),0 0 40px rgba(0,245,255,.35),inset 0 0 20px rgba(0,245,255,.15)}}
+.brand h1{font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(18px,2.8vw,28px);letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);text-shadow:0 0 10px rgba(0,245,255,.7),0 0 30px rgba(0,245,255,.3);line-height:1}
+.brand p{color:var(--muted);font-size:11px;margin-top:5px;letter-spacing:.12em;text-transform:uppercase;font-family:'Share Tech Mono',monospace}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+.btn{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:9px 14px;border-radius:2px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:.18s;white-space:nowrap;position:relative;overflow:hidden}
+.btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(0,245,255,.04));opacity:0;transition:.18s}
+.btn:hover{border-color:var(--cyan-dim);color:var(--cyan);background:rgba(0,245,255,.06);box-shadow:0 0 12px rgba(0,245,255,.2);transform:translateY(-1px)}
+.btn:hover::before{opacity:1}
+.btn svg{width:14px;height:14px}
+.btn.primary{background:linear-gradient(135deg,rgba(0,245,255,.15),rgba(0,188,212,.1));border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 14px rgba(0,245,255,.3),inset 0 0 14px rgba(0,245,255,.05);text-shadow:0 0 8px rgba(0,245,255,.6)}
+.btn.primary:hover{box-shadow:0 0 22px rgba(0,245,255,.5),inset 0 0 20px rgba(0,245,255,.1)}
+.btn.ghost{background:transparent;border-color:var(--line)}
+.btn:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.btn.danger{background:rgba(255,34,68,.1);border-color:var(--red);color:var(--red);box-shadow:0 0 10px rgba(255,34,68,.2)}
+.btn.danger:hover{box-shadow:var(--glow-r)}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:16px}
+@media(max-width:1080px){.kpis{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:620px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--panel);border:1px solid var(--line-soft);border-radius:2px;padding:13px 14px;position:relative;overflow:hidden;transition:.2s}
+.kpi:hover{border-color:var(--cyan-dim);box-shadow:0 0 18px rgba(0,245,255,.1)}
+.kpi.total{border-color:var(--cyan-deep);background:linear-gradient(165deg,rgba(0,245,255,.07),var(--panel))}
+.kpi .bar{position:absolute;left:0;top:0;bottom:0;width:2px}
+.kpi .lab{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-family:'Share Tech Mono',monospace}
+.kpi .num{font-family:'Orbitron',monospace;font-weight:700;font-size:24px;letter-spacing:-.01em;margin-top:8px;line-height:1;font-variant-numeric:tabular-nums}
+.kpi.total .num{font-size:28px;color:var(--cyan);text-shadow:0 0 12px rgba(0,245,255,.5)}
+.kpi .pct{font-size:11px;color:var(--muted);margin-top:6px;font-family:'Share Tech Mono',monospace}
+.kpi .pct b{color:var(--text)}
+
+/* controls */
+.controls{background:var(--panel);border:1px solid var(--line-soft);border-radius:2px;padding:12px;display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.search{flex:1;min-width:200px;position:relative}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--muted)}
+.search input{width:100%;background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;color:var(--text);padding:9px 11px 9px 32px;font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;transition:.18s}
+.search input:focus{border-color:var(--cyan-dim);box-shadow:0 0 10px rgba(0,245,255,.15);color:var(--cyan)}
+select{background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;color:var(--muted);padding:8px 10px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.04em;cursor:pointer;outline:none;transition:.18s}
+select:focus{border-color:var(--cyan-dim);color:var(--text)}
+.toggle{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);cursor:pointer;user-select:none;letter-spacing:.06em;font-family:'Share Tech Mono',monospace;text-transform:uppercase}
+.toggle input{appearance:none;width:34px;height:18px;background:var(--line);border-radius:2px;position:relative;cursor:pointer;transition:.2s;flex:none;border:1px solid var(--line-soft)}
+.toggle input:checked{background:rgba(0,245,255,.2);border-color:var(--cyan)}
+.toggle input::after{content:'';position:absolute;width:12px;height:12px;border-radius:1px;background:var(--muted);top:2px;left:2px;transition:.2s}
+.toggle input:checked::after{left:18px;background:var(--cyan);box-shadow:0 0 6px var(--cyan)}
+.count-info{color:var(--muted-2);font-size:11px;font-family:'Share Tech Mono',monospace;margin-left:auto;letter-spacing:.06em}
+.c-chk{width:40px;text-align:center}
+input.cb{appearance:none;width:16px;height:16px;border:1px solid var(--muted-2);border-radius:1px;background:var(--bg-2);cursor:pointer;position:relative;vertical-align:middle;transition:.12s;flex:none}
+input.cb:checked,input.cb:indeterminate{background:rgba(0,245,255,.2);border-color:var(--cyan);box-shadow:0 0 6px rgba(0,245,255,.4)}
+input.cb:checked::after{content:'';position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid var(--cyan);border-width:0 2px 2px 0;transform:rotate(45deg)}
+input.cb:indeterminate::after{content:'';position:absolute;left:2px;top:6px;width:10px;height:2px;background:var(--cyan)}
+thead th.c-chk input.cb{border-color:rgba(0,245,255,.4)}
+.selbar{display:none;align-items:center;gap:13px;background:rgba(0,245,255,.05);border:1px solid var(--cyan-deep);border-radius:2px;padding:10px 14px;margin-bottom:12px;flex-wrap:wrap}
+.selbar.show{display:flex}
+.selbar .cnt{font-family:'Orbitron',monospace;font-weight:700;font-size:13px;color:var(--muted);letter-spacing:.06em}
+.selbar .cnt b{color:var(--cyan);text-shadow:0 0 8px rgba(0,245,255,.5)}
+.selbar .sp{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.linkbtn{background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;text-decoration:none;font-family:'Share Tech Mono',monospace;padding:0;letter-spacing:.06em;border-bottom:1px solid var(--muted-2);transition:.15s}
+.linkbtn:hover{color:var(--cyan);border-color:var(--cyan)}
+
+/* table */
+.table-wrap{background:var(--panel);border:1px solid var(--line-soft);border-radius:2px;overflow:hidden}
+.scroller{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:1020px}
+thead th{background:linear-gradient(180deg,rgba(0,30,60,.9),rgba(0,20,40,.95));color:var(--cyan);font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;text-align:left;padding:12px 13px;white-space:nowrap;position:sticky;top:0;font-family:'Share Tech Mono',monospace;border-bottom:1px solid var(--cyan-deep);text-shadow:0 0 8px rgba(0,245,255,.4)}
+tbody td{padding:10px 13px;border-bottom:1px solid var(--line-soft);font-size:12px;vertical-align:middle;white-space:nowrap;transition:.14s}
+tbody tr:hover{background:rgba(0,245,255,.04)}
+tbody tr:hover td{border-bottom-color:rgba(0,245,255,.12)}
+tbody tr:last-child td{border-bottom:none}
+.c-idx{color:var(--muted-2);font-family:'Share Tech Mono',monospace;width:46px}
+.c-link{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text);max-width:260px;overflow:hidden;text-overflow:ellipsis}
+.c-link a{color:var(--cyan-dim);text-decoration:none;transition:.15s}
+.c-link a:hover{color:var(--cyan);text-shadow:0 0 8px rgba(0,245,255,.5)}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:1px;font-size:10px;font-weight:600;font-family:'Share Tech Mono',monospace;white-space:nowrap;letter-spacing:.06em;text-transform:uppercase}
+.pill .dot{width:5px;height:5px;border-radius:50%}
+.flag{display:inline-block;padding:2px 8px;border-radius:1px;font-size:10px;font-weight:600;font-family:'Share Tech Mono',monospace;letter-spacing:.08em;text-transform:uppercase}
+.flag.new{background:var(--green-bg);color:var(--green);border:1px solid rgba(57,255,20,.25);text-shadow:0 0 6px rgba(57,255,20,.5)}
+.flag.upd{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(255,204,0,.25);text-shadow:0 0 6px rgba(255,204,0,.5)}
+.flag.dup{background:var(--red-bg);color:var(--red);border:1px solid rgba(255,34,68,.25);text-shadow:0 0 6px rgba(255,34,68,.5)}
+.mono{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted-2)}
+.c-act{white-space:nowrap}
+.iconbtn{border:1px solid var(--line-soft);background:var(--bg-2);color:var(--muted-2);width:28px;height:28px;border-radius:2px;cursor:pointer;display:inline-grid;place-items:center;transition:.14s;margin-right:4px}
+.iconbtn svg{width:13px;height:13px}
+.iconbtn.edit:hover{border-color:var(--amber);color:var(--amber);background:var(--amber-bg);box-shadow:0 0 8px rgba(255,204,0,.3)}
+.iconbtn.del:hover{border-color:var(--red);color:var(--red);background:var(--red-bg);box-shadow:0 0 8px rgba(255,34,68,.3)}
+.empty{padding:70px 20px;text-align:center;color:var(--muted)}
+.empty svg{width:46px;height:46px;color:var(--muted-2);margin-bottom:14px;filter:drop-shadow(0 0 8px rgba(0,245,255,.2))}
+.empty h3{font-family:'Orbitron',monospace;font-weight:700;font-size:16px;color:var(--cyan);text-shadow:0 0 10px rgba(0,245,255,.5);margin-bottom:8px;letter-spacing:.08em}
+.empty p{font-size:12px;max-width:420px;margin:0 auto 18px;font-family:'Share Tech Mono',monospace;color:var(--muted);letter-spacing:.04em}
+
+/* pagination */
+.pager{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-top:1px solid var(--line-soft);flex-wrap:wrap;gap:10px}
+.pager .pg-btns{display:flex;gap:5px;align-items:center}
+.pg{border:1px solid var(--line-soft);background:var(--bg-2);color:var(--muted);width:30px;height:30px;border-radius:2px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:12px;display:grid;place-items:center;transition:.14s}
+.pg:hover:not(:disabled){border-color:var(--cyan-dim);color:var(--cyan);box-shadow:0 0 8px rgba(0,245,255,.2)}
+.pg:disabled{opacity:.25;cursor:not-allowed}
+.pg.active{background:rgba(0,245,255,.15);border-color:var(--cyan);color:var(--cyan);text-shadow:0 0 6px rgba(0,245,255,.5);box-shadow:0 0 10px rgba(0,245,255,.2)}
+.pg-info{color:var(--muted-2);font-size:11px;font-family:'Share Tech Mono',monospace;letter-spacing:.06em}
+
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(1,4,10,.85);backdrop-filter:blur(6px);display:none;place-items:center;z-index:50;padding:20px}
+.overlay.show{display:grid}
+.auth-overlay{position:fixed;inset:0;background:radial-gradient(ellipse 900px 500px at 80% 0%,rgba(0,245,255,.07),transparent 60%),radial-gradient(ellipse 600px 400px at 10% 100%,rgba(255,0,170,.05),transparent 60%),var(--bg);display:none;place-items:center;z-index:9999;padding:20px}
+.auth-overlay.show{display:grid}
+.auth-card{width:min(400px,100%)}
+.auth-logo{width:54px;height:54px;border-radius:2px;border:1px solid var(--cyan);background:rgba(0,245,255,.08);display:grid;place-items:center;box-shadow:var(--glow-c),inset 0 0 16px rgba(0,245,255,.1);margin:0 auto 18px;animation:pulse-c 3s ease-in-out infinite}
+.auth-logo svg{width:26px;height:26px;filter:drop-shadow(0 0 8px var(--cyan))}
+.auth-card h2{font-family:'Orbitron',monospace;font-weight:900;font-size:20px;text-align:center;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);text-shadow:0 0 12px rgba(0,245,255,.5)}
+.auth-card .sub{color:var(--muted);font-size:11px;text-align:center;margin-top:7px;margin-bottom:18px;font-family:'Share Tech Mono',monospace;letter-spacing:.06em}
+.auth-err{color:var(--red);font-size:11px;min-height:16px;margin-top:4px;font-family:'Share Tech Mono',monospace;text-shadow:0 0 6px rgba(255,34,68,.5)}
+.btn.block{width:100%;justify-content:center;padding:11px;margin-top:8px}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:2px;width:min(560px,100%);max-height:88vh;overflow:auto;box-shadow:0 0 40px rgba(0,245,255,.08),0 30px 80px rgba(0,0,0,.8)}
+.modal-head{padding:20px 22px 0;display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--line-soft);padding-bottom:14px}
+.modal-head h2{font-family:'Orbitron',monospace;font-weight:700;font-size:16px;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);text-shadow:0 0 10px rgba(0,245,255,.4)}
+.modal-head p{color:var(--muted);font-size:11px;margin-top:5px;font-family:'Share Tech Mono',monospace;letter-spacing:.04em}
+.x{background:none;border:1px solid var(--line-soft);color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:3px 8px;border-radius:2px;transition:.15s;font-family:monospace}
+.x:hover{color:var(--red);border-color:var(--red);box-shadow:0 0 8px rgba(255,34,68,.3)}
+.modal-body{padding:18px 22px 22px}
+.drop{border:1px dashed var(--muted-2);border-radius:2px;padding:24px 18px;text-align:center;cursor:pointer;transition:.18s;background:var(--bg-2);position:relative;overflow:hidden}
+.drop::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 50%,rgba(0,245,255,.03));opacity:0;transition:.18s}
+.drop:hover,.drop.over{border-color:var(--cyan);background:rgba(0,245,255,.04);box-shadow:inset 0 0 20px rgba(0,245,255,.05)}
+.drop:hover::before,.drop.over::before{opacity:1}
+.drop svg{width:32px;height:32px;color:var(--cyan);margin-bottom:10px;filter:drop-shadow(0 0 8px rgba(0,245,255,.5))}
+.drop b{display:block;font-size:13px;margin-bottom:3px;font-family:'Orbitron',monospace;font-weight:600;letter-spacing:.06em;color:var(--text)}
+.drop span{color:var(--muted);font-size:11px;font-family:'Share Tech Mono',monospace;letter-spacing:.04em}
+.divider{display:flex;align-items:center;gap:12px;color:var(--muted-2);font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin:16px 0;font-family:'Share Tech Mono',monospace}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--cyan-deep),transparent)}
+textarea{width:100%;min-height:110px;background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;color:var(--text);padding:11px;font-family:'Share Tech Mono',monospace;font-size:12px;resize:vertical;outline:none;transition:.18s}
+textarea:focus{border-color:var(--cyan-dim);box-shadow:0 0 10px rgba(0,245,255,.1)}
+.field-lab{font-size:9px;color:var(--cyan);font-weight:600;margin:14px 0 7px;letter-spacing:.14em;text-transform:uppercase;font-family:'Share Tech Mono',monospace;text-shadow:0 0 6px rgba(0,245,255,.4)}
+.modes{display:flex;gap:7px}
+.mode{flex:1;border:1px solid var(--line-soft);background:var(--bg-2);border-radius:2px;padding:10px 9px;cursor:pointer;text-align:center;transition:.16s}
+.mode:hover{border-color:var(--cyan-dim);box-shadow:0 0 10px rgba(0,245,255,.1)}
+.mode.sel{border-color:var(--cyan);background:rgba(0,245,255,.07);box-shadow:0 0 14px rgba(0,245,255,.15)}
+.mode b{display:block;font-size:11px;margin-bottom:3px;font-family:'Orbitron',monospace;letter-spacing:.06em;color:var(--text)}
+.mode.sel b{color:var(--cyan);text-shadow:0 0 8px rgba(0,245,255,.5)}
+.mode span{font-size:10px;color:var(--muted-2);line-height:1.3;font-family:'Share Tech Mono',monospace}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px 13px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg.full{grid-column:1/-1}
+.fg label{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);font-family:'Share Tech Mono',monospace;text-shadow:0 0 6px rgba(0,245,255,.3)}
+.fg input,.fg select{background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;color:var(--text);padding:9px 10px;font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;transition:.18s}
+.fg input:focus,.fg select:focus{border-color:var(--cyan-dim);box-shadow:0 0 8px rgba(0,245,255,.12)}
+.fg .hint{font-size:10px;color:var(--muted-2);font-family:'Share Tech Mono',monospace}
+.note-box{background:rgba(0,245,255,.04);border:1px solid var(--cyan-deep);border-radius:2px;border-left:2px solid var(--cyan-dim);padding:10px 12px;font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6;font-family:'Share Tech Mono',monospace}
+.form-grid .full{grid-column:1 / -1}
+.fld label{display:block;font-size:9px;color:var(--cyan);font-family:'Share Tech Mono',monospace;font-weight:600;margin-bottom:5px;letter-spacing:.1em;text-transform:uppercase;text-shadow:0 0 6px rgba(0,245,255,.3)}
+.fld input,.fld select{width:100%;background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;color:var(--text);padding:8px 10px;font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;transition:.18s}
+.fld input:focus,.fld select:focus{border-color:var(--cyan-dim);box-shadow:0 0 8px rgba(0,245,255,.12)}
+.hint{font-size:10px;color:var(--muted-2);margin-top:4px;font-family:'Share Tech Mono',monospace}
+.confirm-card{text-align:center;padding:6px 4px}
+.confirm-card .warn{width:48px;height:48px;border-radius:2px;border:1px solid var(--red);background:var(--red-bg);display:grid;place-items:center;margin:0 auto 14px;box-shadow:0 0 16px rgba(255,34,68,.3)}
+.confirm-card .warn svg{width:24px;height:24px;color:var(--red);filter:drop-shadow(0 0 6px rgba(255,34,68,.5))}
+.confirm-card .lnk{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text);background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;padding:8px 10px;margin:12px 0 4px;word-break:break-all}
+
+/* log */
+.logrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line-soft);font-size:11px}
+.logrow:last-child{border:none}
+.logrow .lt{font-family:'Share Tech Mono',monospace;color:var(--muted-2);font-size:10px;flex:none;letter-spacing:.06em}
+.logrow .ld{color:var(--text);font-family:'Share Tech Mono',monospace}
+.logrow .ld b{color:var(--green);text-shadow:0 0 6px rgba(57,255,20,.4)}
+.section-title{font-family:'Orbitron',monospace;font-weight:700;font-size:13px;margin:24px 0 11px;display:flex;align-items:center;gap:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);text-shadow:0 0 8px rgba(0,245,255,.4)}
+.section-title .tag{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted-2);font-weight:400;text-transform:none;letter-spacing:.04em}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--panel-2);border:1px solid var(--cyan);color:var(--cyan);padding:11px 20px;border-radius:2px;font-size:12px;font-family:'Share Tech Mono',monospace;letter-spacing:.06em;box-shadow:var(--glow-c),0 12px 40px rgba(0,0,0,.6);opacity:0;transition:.25s;z-index:9999;pointer-events:none;text-shadow:0 0 8px rgba(0,245,255,.5)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.savebanner{display:none;font-size:11px;border-radius:2px;padding:9px 12px;margin-bottom:12px;font-family:'Share Tech Mono',monospace;background:rgba(0,245,255,.04);border:1px solid var(--cyan-deep);color:var(--muted);line-height:1.5;letter-spacing:.04em}
+.savebanner.show{display:block}
+.savebanner.warn{background:rgba(255,34,68,.04);border-color:var(--red-dim);color:#ffaaaa}
+.savebanner b{color:var(--cyan)}
+.ddot{width:7px;height:7px;border-radius:50%;background:var(--muted-2);display:inline-block;flex:none}
+.ddot.on{background:var(--green);box-shadow:0 0 8px var(--green)}
+.ddot.err{background:var(--red);box-shadow:0 0 8px var(--red)}
+.drow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-soft);font-size:12px}
+.drow:last-child{border:none}
+.dstatus{font-size:12px;color:var(--muted);font-family:'Share Tech Mono',monospace;line-height:1.6;letter-spacing:.04em}
+.dsteps{font-size:11px;color:var(--muted-2);line-height:1.7;margin-top:6px;font-family:'Share Tech Mono',monospace}
+.dsteps code{background:var(--bg-2);padding:1px 5px;border-radius:2px;color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:10px;word-break:break-all;border:1px solid var(--line-soft)}
+.chartpanel{background:var(--panel);border:1px solid var(--line-soft);border-radius:2px;padding:14px 16px;margin-bottom:16px;position:relative;overflow:hidden}
+.chartpanel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan-dim),transparent)}
+.chart-head{font-family:'Orbitron',monospace;font-weight:700;font-size:12px;margin-bottom:13px;display:flex;align-items:baseline;gap:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--cyan);text-shadow:0 0 8px rgba(0,245,255,.4)}
+.chart-head span{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted-2);font-weight:400;text-transform:none;letter-spacing:.04em}
+.chartbars{display:flex;flex-direction:column;gap:8px}
+.cbar{display:grid;grid-template-columns:96px 1fr 96px;align-items:center;gap:11px}
+.cbar .cl{font-size:10px;color:var(--muted);font-family:'Share Tech Mono',monospace;text-align:right;white-space:nowrap;letter-spacing:.06em;text-transform:uppercase}
+.cbar .ct{height:14px;background:var(--bg-2);border-radius:1px;overflow:hidden;border:1px solid var(--line-soft)}
+.cbar .cf{height:100%;border-radius:1px;transition:width .5s cubic-bezier(.4,0,.2,1);min-width:2px}
+.cbar .cv{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text);white-space:nowrap}
+.cbar .cv b{font-weight:600}.cbar .cv span{color:var(--muted-2)}
+.datef{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);white-space:nowrap;font-family:'Share Tech Mono',monospace;letter-spacing:.04em}
+.datef input{background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;color:var(--text);padding:7px 8px;font-family:'Share Tech Mono',monospace;font-size:11px;outline:none;color-scheme:dark;transition:.18s}
+.datef input:focus{border-color:var(--cyan-dim)}
+#bulkStatus{padding:7px 10px}
+.lpedit{width:100%;min-width:80px;background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;color:var(--text);padding:5px 7px;font-family:'Share Tech Mono',monospace;font-size:11px;outline:none;transition:.18s}
+.lpedit:focus{border-color:var(--cyan-dim);box-shadow:0 0 6px rgba(0,245,255,.15)}
+
+/* corner decorations on modal */
+.modal::before,.modal::after{content:'';position:absolute;width:12px;height:12px;border-color:var(--cyan);border-style:solid;pointer-events:none}
+.modal{position:relative}
+.modal::before{top:0;left:0;border-width:2px 0 0 2px}
+.modal::after{top:0;right:0;border-width:2px 2px 0 0}
+</style>
+</head>
+<body>
+<div class="auth-overlay show" id="authOverlay">
+  <div class="auth-card modal" style="padding:26px 24px">
+    <div class="auth-logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+    <div id="authSetup" style="display:none">
+      <h2>Buat akun akses</h2>
+      <p class="sub">Atur username &amp; password untuk mengunci dashboard ini di perangkat ini.</p>
+      <div class="fg full"><label>Username</label><input id="suUser" type="text" autocomplete="username" placeholder="Admin"></div>
+      <div class="fg full" style="margin-top:12px"><label>Password</label><input id="suPass" type="password" autocomplete="new-password" placeholder="minimal 6 karakter"></div>
+      <div class="fg full" style="margin-top:12px"><label>Ulangi password</label><input id="suPass2" type="password" autocomplete="new-password" placeholder="ketik ulang"></div>
+      <div class="auth-err" id="suErr"></div>
+      <button class="btn primary block" id="suBtn">Simpan &amp; masuk</button>
+    </div>
+    <div id="authLogin" style="display:none">
+      <h2>Masuk</h2>
+      <p class="sub">Dashboard ini terkunci. Masukkan kredensial Anda.</p>
+      <div class="fg full"><label>Username</label><input id="liUser" type="text" autocomplete="username" placeholder="username"></div>
+      <div class="fg full" style="margin-top:12px"><label>Password</label><input id="liPass" type="password" autocomplete="current-password" placeholder="password"></div>
+      <div class="auth-err" id="liErr"></div>
+      <button class="btn primary block" id="liBtn">Masuk</button>
+      <button class="linkbtn" id="liReset" style="display:block;margin:12px auto 0">Lupa / reset kredensial</button>
+    </div>
+    <div class="note-box" style="margin-top:18px;font-size:11px">Kunci ini bekerja di sisi browser sebagai <b>penghalang akses kasual</b>, bukan keamanan tingkat server. lindungi juga di lapisan hosting/Sheet (lihat catatan).</div>
+  </div>
+</div>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7L12 19"/></svg>
+      </div>
+      <div>
+        <h1>Link Monitor</h1>
+        <p>Pemantauan status &amp; pembaruan link unduhan</p>
+      </div>
+    </div>
+    <div class="head-actions">
+      <button class="btn ghost" id="logoutBtn" title="Kunci dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Keluar</button>
+      <button class="btn ghost" id="undoBtn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>Urungkan</button>
+      <button class="btn ghost" id="driveBtn"><span class="ddot" id="driveDot"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.71 3.5 1.15 15l3.43 6 6.56-11.5z"/><path d="M22.85 15 16.29 3.5H9.43l6.56 11.5z"/><path d="M4.58 21h13.27l3.43-6H8.01z"/></svg>Google</button>
+      <button class="btn ghost" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Export</button>
+      <button class="btn primary" id="importBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>Update Link</button>
+    </div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="chartpanel">
+    <div class="chart-head">Distribusi per kategori <span id="chartTotal"></span></div>
+    <div class="chartbars" id="chartBars"></div>
+  </div>
+
+  <div class="controls">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="search" placeholder="Cari link atau nama…">
+    </div>
+    <select id="fStatus"><option value="">Semua Status</option></select>
+    <select id="fRegion"><option value="">Semua Region</option></select>
+    <select id="fPart"><option value="">Semua Link Part</option></select>
+    <select id="fSort">
+      <option value="">Urutan: bawaan</option>
+      <option value="link-asc">Link A→Z</option>
+      <option value="link-desc">Link Z→A</option>
+      <option value="date-desc">Tanggal terbaru</option>
+      <option value="date-asc">Tanggal terlama</option>
+    </select>
+    <label class="datef">Dari<input type="date" id="fFrom"></label>
+    <label class="datef">Sampai<input type="date" id="fTo"></label>
+    <label class="toggle"><input type="checkbox" id="fUpdated"> Hanya yang baru di-update</label>
+    <label class="toggle"><input type="checkbox" id="fDups"> Hanya duplikat</label>
+    <button class="btn ghost" id="dupBtn" style="padding:8px 12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Cek &amp; pilih duplikat</button>
+    <span class="count-info" id="countInfo"></span>
+  </div>
+
+  <div class="savebanner" id="saveBanner"></div>
+
+  <div class="selbar" id="selbar">
+    <span class="cnt"><b id="selCount">0</b> dipilih</span>
+    <button class="linkbtn" id="selAllFiltered" style="display:none"></button>
+    <div class="sp">
+      <select id="bulkStatus" title="Ubah status terpilih">
+        <option value="">Ubah status…</option>
+        <option value="complete">Complete</option>
+        <option value="uncomplete">Uncomplete</option>
+        <option value="lost">Lost File</option>
+        <option value="skip">Skip</option>
+        <option value="broken">Broken Link</option>
+        <option value="blank">Blank</option>
+      </select>
+      <button class="btn" id="bulkStatusApply">Terapkan</button>
+      <button class="linkbtn" id="selClear">Bersihkan pilihan</button>
+      <button class="btn danger" id="selDelete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Hapus terpilih</button>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="scroller">
+      <table>
+        <thead><tr>
+          <th class="c-chk"><input type="checkbox" class="cb" id="chkAll" title="Pilih semua di halaman ini"></th>
+          <th>No</th><th>Link</th><th>Test</th><th>Status</th><th>Link Part</th>
+          <th>Region</th><th>Update</th><th>Perubahan</th><th>Last Page</th><th>Aksi</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="pager" id="pager"></div>
+  </div>
+
+  <div class="section-title">Riwayat Pembaruan <span class="tag">— log import sesi ini & tersimpan</span></div>
+  <div class="table-wrap" style="padding:6px 16px"><div id="logList"><div class="logrow"><span class="ld" style="color:var(--muted)">Belum ada pembaruan.</span></div></div></div>
+</div>
+
+<!-- import modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div><h2>Update Link</h2><p>Upload Excel / CSV / TXT atau tempel catatan untuk memperbarui link.</p></div>
+      <button class="x" id="closeModal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="drop" id="drop">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        <b>Klik atau seret file ke sini</b>
+        <span>.xlsx, .xls, .csv, .txt — header otomatis dipetakan</span>
+        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv,.txt" hidden>
+      </div>
+      <div class="divider">atau tempel note</div>
+      <textarea id="pasteArea" placeholder="Tempel data di sini. Bisa CSV/TSV dengan header, atau satu link per baris.&#10;Contoh:&#10;link,status,region&#10;dl.surf/file/abc,Complete,PH"></textarea>
+
+      <div class="field-lab">Mode pembaruan</div>
+      <div class="modes" id="modes">
+        <div class="mode sel" data-mode="merge"><b>Merge</b><span>Cocokkan via Link: update yg ada, tambah yg baru</span></div>
+        <div class="mode" data-mode="append"><b>Append</b><span>Tambah semua sebagai baris baru</span></div>
+        <div class="mode" data-mode="replace"><b>Replace</b><span>Hapus semua, ganti dgn file ini</span></div>
+      </div>
+
+      <div class="note-box">Kunci pencocokan = kolom <b>Link</b>. Header dideteksi otomatis (Name, Link, Status, Region, Link Part, Test, Update, Last Page). Pastikan nama header file Anda sesuai agar pemetaan akurat.</div>
+
+      <div class="modal-foot">
+        <button class="btn ghost" id="cancelImport">Batal</button>
+        <button class="btn primary" id="doImport" disabled>Proses Update</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="editOverlay">
+  <div class="modal" style="width:min(520px,100%)">
+    <div class="modal-head">
+      <div><h2>Edit Link</h2><p>Ubah detail lalu simpan. URL yang tertanam pada kolom Link otomatis dijadikan tautan.</p></div>
+      <button class="x" id="closeEdit">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="fg full"><label>Link</label><input id="eLink" type="text" placeholder="dl.surf/file/...">
+          <span class="hint">Jika berisi teks + link, URL-nya otomatis diekstrak saat disimpan.</span></div>
+        <div class="fg"><label>Status</label><select id="eStatus"></select></div>
+        <div class="fg"><label>Region</label><input id="eRegion" type="text"></div>
+        <div class="fg"><label>Link Part</label><input id="ePart" type="text"></div>
+        <div class="fg"><label>Test</label><input id="eTest" type="text"></div>
+        <div class="fg"><label>Update</label><input id="eUpdate" type="text"></div>
+        <div class="fg"><label>Last Page</label><input id="eLastpage" type="text"></div>
+      </div>
+      <div class="modal-foot" style="justify-content:space-between">
+        <button class="btn" id="deleteEdit" style="border-color:var(--red);color:var(--red)">Hapus</button>
+        <div style="display:flex;gap:9px">
+          <button class="btn ghost" id="cancelEdit">Batal</button>
+          <button class="btn primary" id="saveEdit">Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="confirmOverlay">
+  <div class="modal" style="width:min(400px,100%)">
+    <div class="modal-body" style="padding:24px 22px">
+      <h2 style="font-family:'Bricolage Grotesque';font-weight:800;font-size:18px;margin-bottom:8px">Hapus link?</h2>
+      <p style="color:var(--muted);font-size:13px;line-height:1.5;font-family:'JetBrains Mono';word-break:break-all" id="confirmMsg"></p>
+      <div class="modal-foot" style="margin-top:20px">
+        <button class="btn ghost" id="cancelDelete">Batal</button>
+        <button class="btn primary" id="confirmDeleteBtn" style="background:linear-gradient(135deg,#d6473f,#a8283a);border-color:#d6473f">Hapus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="driveOverlay">
+  <div class="modal" style="width:min(540px,100%)">
+    <div class="modal-head">
+      <div><h2>Google Drive &amp; Sheets</h2><p>Simpan/muat data ke Drive, atau impor langsung dari Google Sheets (baca-saja).</p></div>
+      <button class="x" id="closeDrive">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="divider" style="margin-top:0"><span class="ddot" id="autoDot"></span> Sinkron otomatis dari Sheet publik</div>
+      <input id="autoUrl" type="text" placeholder="Tempel link Google Sheets publik di sini" value="https://docs.google.com/spreadsheets/d/19LTq5_OQ-1UUdx6knUEdCVh9dird6ytLTtt1gT70hAo/edit" style="width:100%;background:var(--bg-2);border:1px solid var(--line-soft);border-radius:9px;color:var(--text);padding:10px 11px;font-family:'JetBrains Mono';font-size:12.5px;outline:none">
+      <div style="display:flex;gap:9px;margin-top:9px;flex-wrap:wrap;align-items:center">
+        <select id="autoInterval" title="Seberapa sering cek perubahan">
+          <option value="30000">Cek tiap 30 detik</option>
+          <option value="60000" selected>Cek tiap 1 menit</option>
+          <option value="300000">Cek tiap 5 menit</option>
+        </select>
+        <label class="toggle"><input type="checkbox" id="autoUpdateExisting"> Perbarui baris lama</label>
+        <button class="btn" id="autoSyncNow">Sinkron sekarang</button>
+        <label class="toggle" style="margin-left:auto"><input type="checkbox" id="autoSyncToggle"> <b>Aktifkan</b></label>
+      </div>
+      <div class="dstatus" id="autoStatus" style="margin-top:10px">Belum aktif. Tempel link sheet publik lalu nyalakan "Aktifkan".</div>
+      <div class="note-box">Isi data di Google Sheets → dashboard menarik baris <b>baru</b> otomatis tiap interval. Sheet wajib dibagikan <b>"Siapa saja dengan link → Pelihat"</b>. Centang <b>"Perbarui baris lama"</b> hanya jika Sheet adalah sumber kebenaran — sel kosong di Sheet tidak akan menimpa data lama. Edit status di aplikasi sebaiknya dilakukan bila <b>tidak</b> mencentang opsi itu.</div>
+
+      <div class="divider">Cara cepat — tempel link (tanpa login)</div>
+      <input id="pubUrl" type="text" placeholder="Tempel link Google Sheets di sini" style="width:100%;background:var(--bg-2);border:1px solid var(--line-soft);border-radius:9px;color:var(--text);padding:10px 11px;font-family:'JetBrains Mono';font-size:12.5px;outline:none">
+      <div style="display:flex;gap:9px;margin-top:9px;flex-wrap:wrap;align-items:center">
+        <select id="pubMode">
+          <option value="merge">Merge</option>
+          <option value="append">Append</option>
+          <option value="replace">Replace</option>
+        </select>
+        <button class="btn primary" id="pubImport">Impor dari link</button>
+      </div>
+      <div class="note-box">Sheet harus dibagikan <b>"Siapa saja dengan link → Pelihat"</b> (atau dipublikasikan). Tanpa itu, impor tanpa login tidak bisa — pakai opsi "login" di bawah untuk sheet privat. Baris pertama = header.</div>
+
+      <div class="divider">Untuk sheet privat — perlu login Google</div>
+      <div class="dstatus" id="driveStatus">Memeriksa…</div>
+
+      <div class="field-lab" style="margin-top:16px">OAuth Client ID (dari Google Cloud Console)</div>
+      <input id="driveClientId" type="text" placeholder="xxxxxxxx.apps.googleusercontent.com" style="width:100%;background:var(--bg-2);border:1px solid var(--line-soft);border-radius:9px;color:var(--text);padding:10px 11px;font-family:'JetBrains Mono';font-size:12.5px;outline:none">
+      <div style="display:flex;gap:9px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn" id="driveSaveCfg">Simpan Client ID</button>
+        <button class="btn primary" id="driveConnect">Hubungkan</button>
+      </div>
+
+      <div class="drow" style="margin-top:14px">
+        <button class="btn ghost" id="driveSaveNow" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Simpan ke Drive</button>
+        <button class="btn ghost" id="driveLoadNow" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Muat dari Drive</button>
+        <label class="toggle" style="margin-left:auto"><input type="checkbox" id="driveAutosync"> Sinkron otomatis</label>
+      </div>
+
+      <div class="note-box">Penyimpanan Drive berupa <b>satu file JSON</b> (bukan database). Untuk data sangat besar, sinkron otomatis dimatikan demi keamanan — gunakan tombol manual. Fitur ini hanya aktif saat dashboard dijalankan di <b>origin/hosting Anda sendiri</b>.</div>
+
+      <div class="divider">Impor dari Google Sheets (baca-saja)</div>
+      <input id="sheetUrl" type="text" placeholder="Tempel URL Google Sheets atau ID-nya" style="width:100%;background:var(--bg-2);border:1px solid var(--line-soft);border-radius:9px;color:var(--text);padding:10px 11px;font-family:'JetBrains Mono';font-size:12.5px;outline:none">
+      <div style="display:flex;gap:9px;margin-top:9px;flex-wrap:wrap;align-items:center">
+        <input id="sheetTab" type="text" placeholder="Nama tab (opsional)" style="flex:1;min-width:120px;background:var(--bg-2);border:1px solid var(--line-soft);border-radius:9px;color:var(--text);padding:9px 11px;font-family:'JetBrains Mono';font-size:12.5px;outline:none">
+        <select id="sheetMode">
+          <option value="merge">Merge</option>
+          <option value="append">Append</option>
+          <option value="replace">Replace</option>
+        </select>
+        <button class="btn primary" id="sheetImport" disabled>Impor dari Sheet</button>
+      </div>
+      <div class="note-box">Hanya membaca — sheet asli Anda tidak diubah. Baris pertama dianggap header (Link, Status, Region, dst. dipetakan otomatis). Sheet harus dapat Anda akses dengan akun Google yang sama.</div>
+
+      <details style="margin-top:12px">
+        <summary style="cursor:pointer;color:var(--muted);font-size:12.5px">Cara mendapatkan Client ID</summary>
+        <div class="dsteps">
+          1. Buka console.cloud.google.com → buat / pilih project.<br>
+          2. APIs &amp; Services → Library → aktifkan <code>Google Drive API</code> dan <code>Google Sheets API</code>.<br>
+          3. OAuth consent screen → isi & tambahkan email Anda sebagai test user.<br>
+          4. Credentials → Create Credentials → <b>OAuth client ID</b> → tipe <b>Web application</b>.<br>
+          5. Di <b>Authorized JavaScript origins</b> tambahkan origin hosting Anda (mis. <code>https://domainanda.com</code> atau <code>http://localhost:8080</code>).<br>
+          6. Salin Client ID, tempel di atas.
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const fmt = n => n.toLocaleString('id-ID');
+const fmtDate = ms => ms ? new Date(ms).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) : '<span class="mono">—</span>';
+function debounce(fn,ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; }
+
+// ---------- status canonicalization ----------
+const STATUS = {
+  complete:{label:'Complete',color:'green'},
+  uncomplete:{label:'Uncomplete',color:'amber'},
+  lost:{label:'Lost File',color:'orange'},
+  skip:{label:'Skip',color:'gray'},
+  broken:{label:'Broken Link',color:'red'},
+  blank:{label:'Blank',color:'blank'}
+};
+function canonStatus(raw){
+  const s = String(raw||'').toLowerCase().trim();
+  if(!s) return 'blank';
+  if(s.includes('uncomplete')||s.includes('incomplete')||s.includes('belum')) return 'uncomplete';
+  if(s.includes('lost')||s.includes('hilang')) return 'lost';
+  if(s.includes('broken')||s.includes('rusak')||s.includes('mati')) return 'broken';
+  if(s.includes('skip')||s.includes('lewat')) return 'skip';
+  if(s.includes('blank')||s.includes('kosong')) return 'blank';
+  if(s.includes('complete')||s.includes('selesai')||s==='ok'||s==='done') return 'complete';
+  return 'blank';
+}
+const COLOR = {green:'--green',amber:'--amber',orange:'--orange',red:'--red',gray:'--gray',blank:'--blank',purple:'--magenta'};
+const COLORBG = {green:'--green-bg',amber:'--amber-bg',orange:'--orange-bg',red:'--red-bg',gray:'--gray-bg',blank:'--blank-bg',purple:'--magenta-bg'};
+
+// ---------- header mapping ----------
+function normH(h){return String(h||'').toLowerCase().replace(/[^a-z0-9]/g,'');}
+const FIELD_ALIASES = {
+  name:['name','no','nomor','index','idx','id'],
+  link:['link','url','tautan','linkurl','downloadlink'],
+  test:['test','tes','tested','check'],
+  status:['status','state','keterangan'],
+  part:['linkpart','part','type','jenis','tipe'],
+  date:['date','tanggal','tgl'],
+  region:['region','wilayah','negara','country','area'],
+  update:['update','updated','pembaruan'],
+  lastpage:['lastpage','page','halaman','lastpg'],
+  active:['active','aktif','status2']
+};
+function buildMap(headers){
+  const map={};
+  headers.forEach((h,i)=>{
+    const n=normH(h);
+    for(const f in FIELD_ALIASES){
+      if(FIELD_ALIASES[f].includes(n)){ if(map[f]===undefined) map[f]=i; }
+    }
+  });
+  return map;
+}
+function rowsFromMatrix(matrix){
+  if(!matrix.length) return [];
+  // find header row = first row with >=2 recognizable headers
+  let hIdx=0;
+  for(let i=0;i<Math.min(matrix.length,5);i++){
+    const m=buildMap(matrix[i]);
+    if(Object.keys(m).length>=2){hIdx=i;break;}
+  }
+  const headers=matrix[hIdx];
+  const map=buildMap(headers);
+  const hasLink = map.link!==undefined;
+  const out=[];
+  for(let i=hIdx+1;i<matrix.length;i++){
+    const r=matrix[i]; if(!r||!r.length) continue;
+    const get=k=> map[k]!==undefined ? r[map[k]] : '';
+    let link = hasLink ? get('link') : (r.find(c=>String(c||'').includes('/'))||r[0]||'');
+    link=String(link||'').trim();
+    const u=extractUrl(link); if(u) link=u;   // teks + URL -> ambil URL-nya
+    if(!link && !get('name')) continue;
+    out.push(buildRecord({
+      name:get('name'), link, test:get('test'), status:get('status'),
+      part:get('part'), date:get('date'), region:get('region'),
+      update:get('update'), lastpage:get('lastpage'), active:get('active')
+    }));
+  }
+  return out;
+}
+function buildRecord(o){
+  const st=canonStatus(o.status);
+  return {
+    link:String(o.link||'').trim(),
+    test:String(o.test||'').trim(),
+    status:st,
+    part:String(o.part||'').trim(),
+    date:String(o.date||'').trim(),
+    region:String(o.region||'').trim().toUpperCase(),
+    update:String(o.update||'').trim(),
+    lastpage:String(o.lastpage||'').trim(),
+    active:String(o.active||'').trim(),
+    updatedAt:Date.now(),
+    inputAt:Date.now(),
+    _flag:null,
+    _id:'r'+(Date.now().toString(36))+Math.random().toString(36).slice(2,8)
+  };
+}
+
+// ---------- state ----------
+let DATA=[];
+let view=[];
+let page=1; const PAGE_SIZE=50;
+let importMode='merge';
+let pendingRows=null;
+const filters={q:'',status:'',region:'',part:'',updated:false,dups:false,sort:'',from:'',to:''};
+let LOG=[];
+
+// ---------- storage backend terpadu ----------
+// Urutan: window.storage (lingkungan artifact) -> IndexedDB (hosting sendiri, kapasitas besar) -> localStorage (cadangan, ~5MB).
+const IDB={db:null,
+  open(){ return new Promise((res,rej)=>{ if(IDB.db)return res(IDB.db);
+    let r; try{ r=indexedDB.open('linkmon',1); }catch(e){ return rej(e); }
+    r.onupgradeneeded=()=>{ try{ r.result.createObjectStore('kv'); }catch(_){} };
+    r.onsuccess=()=>{ IDB.db=r.result; res(IDB.db); }; r.onerror=()=>rej(r.error); }); },
+  async get(k){ const db=await IDB.open(); return new Promise((res,rej)=>{ const q=db.transaction('kv','readonly').objectStore('kv').get(k); q.onsuccess=()=>res(q.result===undefined?null:q.result); q.onerror=()=>rej(q.error); }); },
+  async set(k,v){ const db=await IDB.open(); return new Promise((res,rej)=>{ const q=db.transaction('kv','readwrite').objectStore('kv').put(v,k); q.onsuccess=()=>res(); q.onerror=()=>rej(q.error); }); },
+  async del(k){ const db=await IDB.open(); return new Promise((res,rej)=>{ const q=db.transaction('kv','readwrite').objectStore('kv').delete(k); q.onsuccess=()=>res(); q.onerror=()=>rej(q.error); }); }
+};
+const store=(function(){
+  const hasWS=(typeof window!=='undefined'&&window.storage&&typeof window.storage.get==='function');
+  const hasIDB=(typeof indexedDB!=='undefined'&&indexedDB);
+  const backend=hasWS?'ws':(hasIDB?'idb':'ls');
+  return { backend,
+    async get(k){
+      if(backend==='ws'){ try{ return await window.storage.get(k,false); }catch(_){ return null; } }
+      if(backend==='idb'){ try{ const v=await IDB.get(k); return v==null?null:{value:v}; }catch(_){ return null; } }
+      try{ const v=localStorage.getItem(k); return v==null?null:{value:v}; }catch(_){ return null; }
+    },
+    async set(k,v){
+      if(backend==='ws') return window.storage.set(k,v,false);
+      if(backend==='idb') return IDB.set(k,v);
+      localStorage.setItem(k,v);
+    },
+    async del(k){
+      if(backend==='ws'){ try{ await window.storage.delete(k,false); }catch(_){} return; }
+      if(backend==='idb'){ try{ await IDB.del(k); }catch(_){} return; }
+      try{ localStorage.removeItem(k); }catch(_){}
+    }
+  };
+})();
+
+// ---------- penyimpanan data (chunk berbasis-byte, hanya tulis yang berubah) ----------
+const SAVE_DEBOUNCE=1200;
+const SAVE_BYTES=3500000;          // batas aman per-key (window.storage limit 5MB)
+const AUTOSAVE_MAX_ROWS=40000;     // hanya untuk auto-push file utuh ke Drive
+let saveTimer=null, dirty=false, lastChunks=0, savedSig=[];
+function tooBig(){ return DATA.length>AUTOSAVE_MAX_ROWS; }  // dipakai khusus Drive
+function stripRow(r){ return {link:r.link,test:r.test,status:r.status,part:r.part,date:r.date,region:r.region,update:r.update,lastpage:r.lastpage,active:r.active,_id:r._id,inputAt:r.inputAt,updatedAt:r.updatedAt,_statusLocked:r._statusLocked?1:undefined}; }
+function buildChunks(){
+  const chunks=[]; let cur=[], bytes=0;
+  for(const r of DATA){ const s=stripRow(r); const sz=JSON.stringify(s).length+1;
+    if(cur.length && bytes+sz>SAVE_BYTES){ chunks.push(cur); cur=[]; bytes=0; }
+    cur.push(s); bytes+=sz; }
+  if(cur.length) chunks.push(cur);
+  return chunks;
+}
+function scheduleSave(){
+  dirty=true; updateSaveState();
+  clearTimeout(saveTimer);
+  if(typeof gdScheduleSync==='function') gdScheduleSync();
+  saveTimer=setTimeout(saveData,SAVE_DEBOUNCE);   // selalu jadwalkan simpan, berapa pun ukuran data
+}
+async function saveData(){
+  try{
+    const chunks=buildChunks(); const n=chunks.length; let failed=0;
+    for(let i=0;i<n;i++){
+      const json=JSON.stringify(chunks[i]); const sig=json.length+':'+chunks[i].length;
+      if(savedSig[i]===sig) continue;                       // chunk tak berubah → lewati (hemat tulis & kuota)
+      try{ await store.set('links:c:'+i,json); savedSig[i]=sig; }
+      catch(e){ failed++; console.warn('chunk',i,'gagal',e); }
+    }
+    await store.set('links:meta', JSON.stringify({n,total:DATA.length,ts:Date.now()}));
+    for(let i=n;i<lastChunks;i++){ await store.del('links:c:'+i); savedSig[i]=undefined; }  // bersihkan chunk sisa
+    lastChunks=n; savedSig.length=n;
+    await store.set('links:log', JSON.stringify(LOG.slice(0,30)));
+    dirty=false; updateSaveState();
+    if(failed){ toast('⚠ '+failed+' bagian gagal disimpan — data terlalu besar untuk penyimpanan ini. Pakai Export .xlsx / Google Drive.'); }
+  }catch(e){ console.warn('save failed',e); toast('⚠ Gagal menyimpan ('+store.backend+'). Gunakan Export .xlsx atau Google Drive.'); }
+}
+function updateSaveState(){
+  const b=$('#saveBanner'); if(!b) return;
+  if(dirty){ b.className='savebanner show'; b.textContent='Menyimpan perubahan…'; }
+  else { b.className='savebanner'; }
+}
+async function loadData(){
+  try{
+    const meta=await store.get('links:meta');
+    if(meta){
+      const {n}=JSON.parse(meta.value); DATA=[];
+      for(let i=0;i<n;i++){ const c=await store.get('links:c:'+i); if(c) DATA=DATA.concat(JSON.parse(c.value)); }
+      DATA.forEach(r=>{ if(!r._id) r._id='r'+Math.random().toString(36).slice(2,10); if(!r.inputAt) r.inputAt=r.updatedAt||Date.now(); });
+      lastChunks=n;
+      try{ const ch=buildChunks(); savedSig=ch.map(c=>JSON.stringify(c).length+':'+c.length); lastChunks=Math.max(n,ch.length); }catch(_){ savedSig=[]; lastChunks=n; }
+    }
+    const lg=await store.get('links:log'); if(lg) LOG=JSON.parse(lg.value);
+  }catch(e){ /* belum ada data tersimpan */ }
+}
+
+// ---------- google drive ----------
+const GD={clientId:'',token:null,expiry:0,tokenClient:null,fileId:null,fileName:'link-monitor-data.json',autosync:false,consented:false,syncTimer:null,_resolve:null,_reject:null};
+function gsiAvailable(){ return !!(window.google && google.accounts && google.accounts.oauth2); }
+function gdValid(){ return !!(GD.token && Date.now() < GD.expiry-60000); }
+function gdInitClient(){
+  if(GD.tokenClient) return true;
+  if(!gsiAvailable() || !GD.clientId) return false;
+  GD.tokenClient=google.accounts.oauth2.initTokenClient({
+    client_id:GD.clientId,
+    scope:'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets.readonly',
+    callback:(resp)=>{
+      if(resp && resp.access_token){
+        GD.token=resp.access_token; GD.expiry=Date.now()+((resp.expires_in||3600)*1000); GD.consented=true;
+        gdUpdateStatus(); if(GD._resolve){GD._resolve(GD.token);GD._resolve=null;GD._reject=null;}
+      } else if(GD._reject){ GD._reject(new Error('Otorisasi dibatalkan/gagal')); GD._resolve=null;GD._reject=null; }
+    }
+  });
+  return true;
+}
+function gdEnsureToken(){
+  return new Promise((resolve,reject)=>{
+    if(gdValid()) return resolve(GD.token);
+    if(!gdInitClient()) return reject(new Error('Drive belum siap — isi Client ID & jalankan di hosting Anda.'));
+    GD._resolve=resolve; GD._reject=reject;
+    try{ GD.tokenClient.requestAccessToken({prompt: GD.consented?'':'consent'}); }catch(e){ reject(e); }
+  });
+}
+async function gdFetch(url,opts={}){
+  await gdEnsureToken();
+  opts.headers=Object.assign({},opts.headers,{Authorization:'Bearer '+GD.token});
+  let r=await fetch(url,opts);
+  if(r.status===401||r.status===403){ GD.token=null; await gdEnsureToken(); opts.headers.Authorization='Bearer '+GD.token; r=await fetch(url,opts); }
+  if(!r.ok) throw new Error('Drive '+r.status);
+  return r;
+}
+async function gdFind(){
+  const q=encodeURIComponent("name='"+GD.fileName+"' and trashed=false");
+  const r=await gdFetch('https://www.googleapis.com/drive/v3/files?q='+q+'&spaces=drive&fields=files(id,name,modifiedTime)');
+  const j=await r.json();
+  GD.fileId=(j.files&&j.files[0])?j.files[0].id:null;
+  return GD.fileId;
+}
+async function gdSave(){
+  if(!GD.fileId) await gdFind();
+  const payload=JSON.stringify({version:1,savedAt:Date.now(),count:DATA.length,rows:DATA});
+  const boundary='gdb'+Date.now();
+  const meta={name:GD.fileName,mimeType:'application/json'};
+  const body='--'+boundary+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(meta)
+    +'\r\n--'+boundary+'\r\nContent-Type: application/json\r\n\r\n'+payload+'\r\n--'+boundary+'--';
+  const url = GD.fileId
+    ? 'https://www.googleapis.com/upload/drive/v3/files/'+GD.fileId+'?uploadType=multipart&fields=id'
+    : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id';
+  const r=await gdFetch(url,{method:GD.fileId?'PATCH':'POST',headers:{'Content-Type':'multipart/related; boundary='+boundary},body});
+  const j=await r.json(); if(j.id) GD.fileId=j.id;
+}
+async function gdLoad(){
+  if(!GD.fileId) await gdFind();
+  if(!GD.fileId) throw new Error('Belum ada file di Drive');
+  const r=await gdFetch('https://www.googleapis.com/drive/v3/files/'+GD.fileId+'?alt=media');
+  const j=await r.json();
+  DATA=(j.rows||[]).map(x=>({...x,_id:x._id||'r'+Math.random().toString(36).slice(2,10),inputAt:x.inputAt||x.updatedAt||Date.now()}));
+  markDuplicates(); refreshFilterOptions(); renderKPI(); applyFilters(); updateSaveState();
+}
+function gdScheduleSync(){
+  if(!GD.autosync || !gdValid()) return;
+  if(tooBig()) return;                 // dataset besar: jangan auto-push file utuh
+  clearTimeout(GD.syncTimer);
+  GD.syncTimer=setTimeout(()=>{ gdSave().then(gdUpdateStatus).catch(e=>console.warn('drive sync',e)); }, 4000);
+}
+function gdUpdateStatus(){
+  const dot=$('#driveDot'); const st=$('#driveStatus');
+  const connected=gdValid();
+  if(dot) dot.className='ddot'+(connected?' on':'');
+  const can = $('#driveSaveNow'); const cl=$('#driveLoadNow'); const si=$('#sheetImport');
+  if(can) can.disabled=!connected; if(cl) cl.disabled=!connected; if(si) si.disabled=!connected;
+  if(!st) return;
+  if(window.__gsiBlocked || !gsiAvailable()){
+    st.innerHTML='⚠ Skrip Google tidak termuat. Drive hanya bekerja saat dijalankan di hosting/origin Anda (bukan di dalam pratinjau).';
+    if(dot) dot.className='ddot err';
+  } else if(!GD.clientId){ st.textContent='Belum dikonfigurasi. Tempel OAuth Client ID lalu Hubungkan.'; }
+  else if(connected){ st.innerHTML='✓ Terhubung. File: <b>'+GD.fileName+'</b>'+(GD.fileId?' (tersimpan)':' (belum dibuat)')+'.'; }
+  else { st.textContent='Client ID tersimpan. Klik Hubungkan untuk login Google.'; }
+}
+function gsExtractId(s){ s=String(s||'').trim(); const m=s.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/); if(m) return m[1]; if(/^[a-zA-Z0-9_-]{20,}$/.test(s)) return s; return ''; }
+function gsExtractGid(s){ const m=String(s||'').match(/[#&?]gid=(\d+)/); return m?m[1]:''; }
+// JSONP ke endpoint gviz (script tag) -> tidak kena CORS. Sheet harus publik (anyone with link).
+function gvizFetch(id,gid){
+  return new Promise((resolve,reject)=>{
+    const cb='__gviz_'+Date.now()+Math.floor(Math.random()*1e4);
+    const s=document.createElement('script'); let done=false;
+    const to=setTimeout(()=>{ if(!done){ cleanup(); reject(new Error('Timeout — pastikan sheet dibagikan publik')); } },15000);
+    function cleanup(){ try{ delete window[cb]; }catch(_){ window[cb]=undefined; } if(s.parentNode) s.parentNode.removeChild(s); clearTimeout(to); }
+    window[cb]=(resp)=>{ done=true; cleanup(); resolve(resp); };
+    s.onerror=()=>{ if(!done){ cleanup(); reject(new Error('Gagal memuat — sheet tidak publik atau link salah')); } };
+    s.src='https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?headers=1&tqx=responseHandler:'+cb+(gid?('&gid='+gid):'');
+    document.head.appendChild(s);
+  });
+}
+function gvizToMatrix(resp){
+  const t=resp&&resp.table; if(!t) return [];
+  const header=(t.cols||[]).map(c=>(c.label||c.id||'').toString());
+  const rows=(t.rows||[]).map(r=>(r.c||[]).map(cell=>cell?(cell.f!=null?cell.f:(cell.v!=null?cell.v:'')):''));
+  return header.some(h=>h) ? [header,...rows] : rows;
+}
+async function gsImportPublic(){
+  const url=$('#pubUrl').value;
+  const id=gsExtractId(url); if(!id) throw new Error('Link/ID Google Sheets tidak valid');
+  const resp=await gvizFetch(id, gsExtractGid(url));
+  const rows=rowsFromMatrix(gvizToMatrix(resp));
+  if(!rows.length) throw new Error('Tidak ada baris terbaca — cek header & akses publik');
+  importRows(rows, $('#pubMode').value||'merge');
+  return rows.length;
+}
+
+async function gsFirstTab(id){
+  const r=await gdFetch('https://sheets.googleapis.com/v4/spreadsheets/'+id+'?fields=sheets.properties.title');
+  const j=await r.json();
+  return (j.sheets && j.sheets[0] && j.sheets[0].properties && j.sheets[0].properties.title) || 'Sheet1';
+}
+async function gsImport(){
+  const id=gsExtractId($('#sheetUrl').value);
+  if(!id) throw new Error('URL/ID Google Sheets tidak valid');
+  await gdEnsureToken();
+  let tab=$('#sheetTab').value.trim();
+  if(!tab) tab=await gsFirstTab(id);
+  const r=await gdFetch('https://sheets.googleapis.com/v4/spreadsheets/'+id+'/values/'+encodeURIComponent(tab)+'?majorDimension=ROWS&valueRenderOption=FORMULA&dateTimeRenderOption=FORMATTED_STRING');
+  const j=await r.json();
+  const matrix=j.values||[];
+  if(!matrix.length) throw new Error('Sheet/tab kosong atau tidak ditemukan');
+  const rows=rowsFromMatrix(matrix);
+  if(!rows.length) throw new Error('Tidak ada baris terbaca — cek header & kolom Link');
+  importRows(rows, $('#sheetMode').value||'merge');
+  return rows.length;
+}
+async function gdConfigLoad(){
+  try{ const c=await store.get('gdrive:clientid'); if(c) GD.clientId=c.value; }catch(_){}
+  try{ const a=await store.get('gdrive:autosync'); if(a) GD.autosync=a.value==='1'; }catch(_){}
+  const ci=$('#driveClientId'); if(ci&&GD.clientId) ci.value=GD.clientId;
+  const as=$('#driveAutosync'); if(as) as.checked=GD.autosync;
+}
+
+// ---------- auto-sync dari Sheet publik (tanpa login, polling) ----------
+const AS={url:'',on:false,interval:60000,updateExisting:false,timer:null,busy:false,lastAt:0};
+// Tambah baris baru saja (default). Bila updateExisting: perbarui field yang TIDAK kosong di Sheet
+// sehingga sel kosong tidak menimpa data lama, dan edit lokal tetap aman.
+function asMerge(rows,updateExisting){
+  let added=0,updated=0;
+  const map=new Map(); DATA.forEach((r,i)=>{ const k=normalizeLink(r.link); if(k) map.set(k,i); });
+  const FIELDS=['link','test','part','date','region','update','lastpage','active'];
+  rows.forEach(r=>{
+    const k=normalizeLink(r.link); if(!k) return;
+    if(map.has(k)){
+      if(!updateExisting) return;
+      const cur=DATA[map.get(k)]; let touched=false;
+      FIELDS.forEach(f=>{ if(String(r[f]||'').trim()!=='' && r[f]!==cur[f]){ cur[f]=r[f]; touched=true; } });
+      // jangan timpa jadi 'blank', dan jangan timpa status yang sudah diedit manual di aplikasi (_statusLocked)
+      if(r.status && r.status!=='blank' && r.status!==cur.status && !cur._statusLocked){ cur.status=r.status; touched=true; }
+      if(touched){ cur._flag='upd'; cur.updatedAt=Date.now(); updated++; }
+    }else{
+      DATA.push({...r,_flag:'new'}); map.set(k,DATA.length-1); added++;
+    }
+  });
+  if(added||updated){
+    LOG.unshift({ts:Date.now(),added,updated,mode:'auto-sync',total:DATA.length});
+    markDuplicates(); refreshFilterOptions(); renderKPI(); applyFilters(); renderLog(); scheduleSave();
+  }
+  return {added,updated};
+}
+async function asTick(manual){
+  if(AS.busy) return;
+  const id=gsExtractId(AS.url);
+  if(!id){ asStatus('⚠ Link/ID sheet tidak valid.','err'); return; }
+  AS.busy=true; asStatus('Mengecek sheet…');
+  try{
+    let rows, via;
+    if(gdValid()){
+      // sudah login → Sheets API: sheet boleh PRIVAT & link =HYPERLINK("url",..) terbaca
+      const tab=await gsFirstTab(id);
+      const r=await gdFetch('https://sheets.googleapis.com/v4/spreadsheets/'+id+'/values/'+encodeURIComponent(tab)+'?majorDimension=ROWS&valueRenderOption=FORMULA&dateTimeRenderOption=FORMATTED_STRING');
+      const j=await r.json(); rows=rowsFromMatrix(j.values||[]); via='API (login)';
+    }else{
+      // publik tanpa login (gviz) → link embedded TIDAK membawa URL-nya
+      const resp=await gvizFetch(id, gsExtractGid(AS.url));
+      rows=rowsFromMatrix(gvizToMatrix(resp)); via='link publik';
+    }
+    AS.lastAt=Date.now();
+    if(!rows.length){ asStatus('Terhubung ('+via+'), tapi belum ada baris terbaca. Cek header (kolom Link) & akses. · '+asClock(),'on'); return; }
+    const {added,updated}=asMerge(rows,AS.updateExisting);
+    if(added||updated){ toast(`✓ Sinkron: +${fmt(added)} baru${updated?' · '+fmt(updated)+' diperbarui':''}`); }
+    asStatus(`✓ Sinkron OK (${via}) — ${fmt(rows.length)} baris · +${fmt(added)} baru${updated?', '+fmt(updated)+' diperbarui':''} · ${asClock()}`,'on');
+  }catch(e){
+    asStatus('⚠ '+e.message+(gdValid()?'':' — pastikan sheet dibagikan "Siapa saja dengan link → Pelihat", atau Hubungkan akun untuk sheet privat.'),'err');
+  }finally{ AS.busy=false; }
+}
+function asClock(){ return new Date(AS.lastAt||Date.now()).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+function asStatus(msg,state){ const s=$('#autoStatus'); if(s) s.textContent=msg; const d=$('#autoDot'); if(d) d.className='ddot'+(state==='on'?' on':state==='err'?' err':''); }
+function asStart(){ clearInterval(AS.timer); if(!AS.on) return; asTick(); AS.timer=setInterval(()=>asTick(),AS.interval); }
+function asStop(){ clearInterval(AS.timer); AS.timer=null; }
+async function asSaveCfg(){
+  try{
+    await store.set('autosync:url',AS.url);
+    await store.set('autosync:on',AS.on?'1':'0');
+    await store.set('autosync:interval',String(AS.interval));
+    await store.set('autosync:upd',AS.updateExisting?'1':'0');
+  }catch(_){}
+}
+async function asConfigLoad(){
+  try{ const u=await store.get('autosync:url'); if(u&&u.value) AS.url=u.value; }catch(_){}
+  try{ const o=await store.get('autosync:on'); if(o) AS.on=o.value==='1'; }catch(_){}
+  try{ const i=await store.get('autosync:interval'); if(i&&i.value) AS.interval=+i.value||60000; }catch(_){}
+  try{ const e=await store.get('autosync:upd'); if(e) AS.updateExisting=e.value==='1'; }catch(_){}
+  const au=$('#autoUrl'); if(au){ if(AS.url) au.value=AS.url; else AS.url=au.value.trim(); }
+  const ai=$('#autoInterval'); if(ai) ai.value=String(AS.interval);
+  const ax=$('#autoUpdateExisting'); if(ax) ax.checked=AS.updateExisting;
+  const at=$('#autoSyncToggle'); if(at) at.checked=AS.on;
+  if(AS.on){ asStatus('Sinkron otomatis aktif — memulai…','on'); asStart(); }
+}
+
+
+// ---------- KPI ----------
+function computeKPI(){
+  const k={total:DATA.length,complete:0,uncomplete:0,lost:0,skip:0,broken:0,blank:0};
+  DATA.forEach(r=>{k[r.status]=(k[r.status]||0)+1;});
+  return k;
+}
+function renderKPI(){
+  const k=computeKPI();
+  const pct=v=>k.total? (v/k.total*100).toFixed(2):'0.00';
+  const cards=[
+    {key:'total',lab:'Total Link',num:k.total,color:'maroon',pctTxt:'100% tercatat'},
+    {key:'complete',lab:'Complete',num:k.complete,color:'green',pctTxt:pct(k.complete)+'%'},
+    {key:'uncomplete',lab:'Uncomplete',num:k.uncomplete,color:'amber',pctTxt:pct(k.uncomplete)+'%'},
+    {key:'lost',lab:'Lost File',num:k.lost,color:'orange',pctTxt:pct(k.lost)+'%'},
+    {key:'skip',lab:'Skip',num:k.skip,color:'gray',pctTxt:pct(k.skip)+'%'},
+    {key:'broken',lab:'Broken Link',num:k.broken,color:'red',pctTxt:pct(k.broken)+'%'},
+    {key:'blank',lab:'Blank',num:k.blank,color:'blank',pctTxt:pct(k.blank)+'%'}
+  ];
+  $('#kpis').innerHTML=cards.map(c=>{
+    const cv = c.color==='maroon' ? '--cyan' : COLOR[c.color];
+    const numStyle = c.color==='maroon'
+      ? 'color:var(--cyan);text-shadow:0 0 12px rgba(0,245,255,.6)'
+      : `color:var(${COLOR[c.color]})`;
+    return `<div class="kpi ${c.key==='total'?'total':''}">
+      <span class="bar" style="background:var(${cv});box-shadow:0 0 6px var(${cv})"></span>
+      <div class="lab">${c.lab}</div>
+      <div class="num" style="${numStyle}">${fmt(c.num)}</div>
+      <div class="pct"><b>${c.pctTxt}</b></div>
+    </div>`;
+  }).join('');
+  renderChart(k);
+}
+function renderChart(k){
+  const cats=[['complete','green'],['uncomplete','amber'],['lost','orange'],['skip','gray'],['broken','red'],['blank','blank']];
+  const max=Math.max(1,...cats.map(([key])=>k[key]||0));
+  $('#chartTotal').textContent = k.total? '· total '+fmt(k.total)+' link' : '· belum ada data';
+  $('#chartBars').innerHTML=cats.map(([key,col])=>{
+    const v=k[key]||0; const pct=k.total?(v/k.total*100):0;
+    return `<div class="cbar">
+      <div class="cl">${STATUS[key].label}</div>
+      <div class="ct"><div class="cf" style="width:${(v/max*100).toFixed(1)}%;background:var(${COLOR[col]});box-shadow:0 0 6px var(${COLOR[col]})"></div></div>
+      <div class="cv"><b style="color:var(${COLOR[col]})">${fmt(v)}</b> <span>${pct.toFixed(1)}%</span></div>
+    </div>`;
+  }).join('');
+}
+
+// ---------- filters / table ----------
+function refreshFilterOptions(){
+  const regs=[...new Set(DATA.map(r=>r.region).filter(Boolean))].sort();
+  const parts=[...new Set(DATA.map(r=>r.part).filter(Boolean))].sort();
+  fill('#fRegion','Semua Region',regs);
+  fill('#fPart','Semua Link Part',parts);
+  fill('#fStatus','Semua Status',Object.keys(STATUS).map(k=>STATUS[k].label));
+}
+function fill(sel,allLabel,items){
+  const el=$(sel); const cur=el.value;
+  el.innerHTML=`<option value="">${allLabel}</option>`+items.map(i=>`<option>${i}</option>`).join('');
+  if([...el.options].some(o=>o.value===cur)) el.value=cur;
+}
+function applyFilters(){
+  const q=filters.q.toLowerCase();
+  const from = filters.from ? new Date(filters.from+'T00:00:00').getTime() : null;
+  const to   = filters.to   ? new Date(filters.to  +'T23:59:59').getTime() : null;
+  view=DATA.filter(r=>{
+    if(q && !(r.link.toLowerCase().includes(q))) return false;
+    if(filters.status && STATUS[r.status].label!==filters.status) return false;
+    if(filters.region && r.region!==filters.region) return false;
+    if(filters.part && r.part!==filters.part) return false;
+    if(filters.updated && !r._flag) return false;
+    if(filters.dups && !r._dup) return false;
+    if(from && (r.inputAt||0) < from) return false;
+    if(to && (r.inputAt||0) > to) return false;
+    return true;
+  });
+  switch(filters.sort){
+    case 'link-asc':  view.sort((a,b)=>a.link.localeCompare(b.link)); break;
+    case 'link-desc': view.sort((a,b)=>b.link.localeCompare(a.link)); break;
+    case 'date-desc': view.sort((a,b)=>(b.inputAt||0)-(a.inputAt||0)); break;
+    case 'date-asc':  view.sort((a,b)=>(a.inputAt||0)-(b.inputAt||0)); break;
+  }
+  page=1; renderTable();
+}
+function renderTable(){
+  const tb=$('#tbody');
+  if(!DATA.length){
+    tb.innerHTML=`<tr><td colspan="11"><div class="empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6M9 15h6"/></svg>
+      <h3>Belum ada data</h3>
+      <p>Klik <b>Update Link</b> untuk upload Excel/CSV atau tempel daftar link Anda.</p>
+    </div></td></tr>`;
+    $('#pager').innerHTML=''; $('#countInfo').textContent='';
+    return;
+  }
+  const total=view.length;
+  const pages=Math.max(1,Math.ceil(total/PAGE_SIZE));
+  if(page>pages) page=pages;
+  const slice=view.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE);
+  tb.innerHTML=slice.map((r,i)=>{
+    const idx=(page-1)*PAGE_SIZE+i+1;
+    const s=STATUS[r.status];
+    const partPill=r.part?`<span class="pill" style="background:var(--purple-bg);color:var(--purple)"><span class="dot" style="background:var(--purple)"></span>${esc(r.part)}</span>`:'<span class="mono">—</span>';
+    const regPill=r.region?`<span class="pill" style="background:var(--red-bg);color:var(--red)"><span class="dot" style="background:var(--red)"></span>${esc(r.region)}</span>`:'<span class="mono">—</span>';
+    const flag=r._flag==='new'?'<span class="flag new">NEW</span>':r._flag==='upd'?'<span class="flag upd">UPDATED</span>':'<span class="mono">—</span>';
+    const testCell = r._dup ? '<span class="flag dup">DOBEL</span>' : (r._dupKeep ? '<span class="mono" style="color:var(--green)">asli</span>' : (esc(r.test)||'<span class="mono">—</span>'));
+    return `<tr>
+      <td class="c-chk"><input type="checkbox" class="cb rowchk" data-id="${r._id}" ${selected.has(r._id)?'checked':''}></td>
+      <td class="c-idx">${idx}</td>
+      <td class="c-link" title="${esc(r.link)}">${linkCell(r.link)}</td>
+      <td>${testCell}</td>
+      <td><span class="pill" style="background:var(${COLORBG[s.color]});color:var(${COLOR[s.color]})"><span class="dot" style="background:var(${COLOR[s.color]})"></span>${s.label}</span></td>
+      <td>${partPill}</td>
+      <td>${regPill}</td>
+      <td class="mono">${fmtDate(r.inputAt)}</td>
+      <td>${flag}</td>
+      <td class="c-act">
+        <button class="iconbtn edit" data-id="${r._id}" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        <button class="iconbtn del" data-id="${r._id}" title="Hapus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </td>
+      <td><input class="lpedit" data-id="${r._id}" value="${esc(r.lastpage)}" placeholder="ketik…"></td>
+    </tr>`;
+  }).join('');
+  $('#countInfo').textContent=`${fmt(total)} hasil`;
+  renderPager(pages,total);
+  bindRowActions();
+  renderSelectionBar();
+  updateChkAll();
+}
+function linkCell(l){
+  if(!l) return '<span class="mono">—</span>';
+  return linkify(l);
+}
+// regex untuk URL: protokol, www, atau domain.tld/path (mis. dl.surf/file/abc)
+const URL_RE=/((?:https?:\/\/|www\.)[^\s<>"']+|[a-z0-9][a-z0-9-]*(?:\.[a-z0-9-]+)+\/[^\s<>"']+)/gi;
+function toHref(u){return /^https?:\/\//i.test(u)?u:'https://'+u.replace(/^\/+/,'');}
+function extractUrl(text){
+  const s=String(text||'');
+  const h=s.match(/=HYPERLINK\(\s*["']([^"']+)["']/i);   // sel berisi =HYPERLINK("url","label") -> ambil url
+  if(h) return h[1];
+  const m=s.match(URL_RE); return m?m[0]:'';
+}
+// ubah URL yang tertanam dalam teks menjadi tautan yang bisa diklik
+function linkify(text){
+  const s=String(text==null?'':text); if(!s) return '<span class="mono">—</span>';
+  let out='',last=0,m; URL_RE.lastIndex=0;
+  while((m=URL_RE.exec(s))){
+    out+=esc(s.slice(last,m.index));
+    const u=m[0];
+    out+=`<a href="${esc(toHref(u))}" target="_blank" rel="noopener">${esc(u)}</a>`;
+    last=m.index+u.length;
+  }
+  out+=esc(s.slice(last));
+  return out||'<span class="mono">—</span>';
+}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function renderPager(pages,total){
+  const win=[]; const span=2;
+  for(let p=Math.max(1,page-span);p<=Math.min(pages,page+span);p++) win.push(p);
+  const btn=(p,act)=>`<button class="pg ${act?'active':''}" data-p="${p}">${p}</button>`;
+  let html=`<button class="pg" data-p="${page-1}" ${page<=1?'disabled':''}>‹</button>`;
+  if(win[0]>1){html+=btn(1)+ (win[0]>2?'<span class="pg-info">…</span>':'');}
+  win.forEach(p=>html+=btn(p,p===page));
+  if(win[win.length-1]<pages){html+=(win[win.length-1]<pages-1?'<span class="pg-info">…</span>':'')+btn(pages);}
+  html+=`<button class="pg" data-p="${page+1}" ${page>=pages?'disabled':''}>›</button>`;
+  $('#pager').innerHTML=`<span class="pg-info">Hal. ${page} / ${pages} · ${fmt(total)} baris</span><div class="pg-btns">${html}</div>`;
+  $('#pager').querySelectorAll('.pg[data-p]').forEach(b=>b.onclick=()=>{const p=+b.dataset.p; if(p>=1&&p<=pages){page=p;renderTable();}});
+}
+
+// ---------- edit / delete ----------
+let editId=null, deleteId=null, deleteMode='single';
+const selected=new Set();
+function bindRowActions(){
+  document.querySelectorAll('.iconbtn.edit').forEach(b=>b.onclick=()=>openEdit(b.dataset.id));
+  document.querySelectorAll('.iconbtn.del').forEach(b=>b.onclick=()=>askDelete(b.dataset.id));
+  document.querySelectorAll('.rowchk').forEach(c=>c.onchange=()=>toggleSelect(c.dataset.id,c.checked));
+  document.querySelectorAll('.lpedit').forEach(inp=>{
+    inp.onchange=()=>commitLastPage(inp.dataset.id,inp.value);
+    inp.onkeydown=ev=>{ if(ev.key==='Enter') inp.blur(); };
+  });
+}
+function commitLastPage(id,val){
+  const r=DATA.find(x=>x._id===id); if(!r) return;
+  if(r.lastpage===val) return;
+  pushUndo({kind:'fields',items:[{id,prev:{lastpage:r.lastpage}}]});
+  r.lastpage=val; scheduleSave();
+}
+function bulkSetStatus(status){
+  if(!selected.size || !STATUS[status]) return;
+  const items=[];
+  DATA.forEach(r=>{ if(selected.has(r._id)){ items.push({id:r._id,prev:{status:r.status,_flag:r._flag,updatedAt:r.updatedAt,_statusLocked:r._statusLocked}}); r.status=status; r._flag='upd'; r.updatedAt=Date.now(); r._statusLocked=true; } });
+  if(!items.length) return;
+  pushUndo({kind:'fields',items});
+  const n=items.length;
+  markDuplicates(); renderKPI(); applyFilters(); scheduleSave();
+  toast('✓ Status '+n+' link diubah → '+STATUS[status].label);
+}
+function currentPageIds(){ return view.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE).map(r=>r._id); }
+function toggleSelect(id,on){ on?selected.add(id):selected.delete(id); renderSelectionBar(); updateChkAll(); }
+function selectPage(on){ currentPageIds().forEach(id=>on?selected.add(id):selected.delete(id)); renderTable(); }
+function selectAllFiltered(){ view.forEach(r=>selected.add(r._id)); renderTable(); }
+function clearSelection(){ selected.clear(); renderTable(); }
+function renderSelectionBar(){
+  const n=selected.size;
+  $('#selbar').classList.toggle('show',n>0);
+  $('#selCount').textContent=fmt(n);
+  const fb=$('#selAllFiltered');
+  if(n>0 && view.length>n){ fb.style.display=''; fb.textContent='Pilih semua '+fmt(view.length)+' hasil terfilter'; }
+  else { fb.style.display='none'; }
+}
+function updateChkAll(){
+  const all=$('#chkAll'); if(!all) return;
+  const ids=currentPageIds();
+  const sel=ids.filter(id=>selected.has(id)).length;
+  all.checked = ids.length>0 && sel===ids.length;
+  all.indeterminate = sel>0 && sel<ids.length;
+}
+// ---------- undo ----------
+const undoStack=[]; const UNDO_MAX=25;
+function pushUndo(entry){ undoStack.push(entry); if(undoStack.length>UNDO_MAX) undoStack.shift(); updateUndoBtn(); }
+function updateUndoBtn(){ const b=$('#undoBtn'); if(b) b.disabled=undoStack.length===0; }
+function undo(){
+  const e=undoStack.pop(); if(!e) return;
+  if(e.kind==='remove'){ e.items.slice().sort((a,b)=>a.i-b.i).forEach(it=>DATA.splice(Math.min(it.i,DATA.length),0,it.row)); }
+  else if(e.kind==='edit'){ const r=DATA.find(x=>x._id===e.id); if(r) Object.assign(r,e.prev); }
+  else if(e.kind==='fields'){ e.items.forEach(it=>{ const r=DATA.find(x=>x._id===it.id); if(r) Object.assign(r,it.prev); }); }
+  else if(e.kind==='snapshot'){ DATA=e.prev; }
+  selected.clear(); markDuplicates();
+  refreshFilterOptions(); renderKPI(); applyFilters(); scheduleSave(); updateUndoBtn();
+  toast('↶ Tindakan diurungkan');
+}
+
+// ---------- deteksi duplikat ----------
+function normalizeLink(l){ return String(l||'').toLowerCase().trim().replace(/^https?:\/\//,'').replace(/\/+$/,''); }
+function markDuplicates(){
+  const seen=new Map(); let dup=0;
+  for(const r of DATA){ r._dup=false; r._dupKeep=false; }
+  for(const r of DATA){
+    const k=normalizeLink(r.link); if(!k) continue;
+    if(seen.has(k)){ r._dup=true; dup++; seen.get(k)._dupKeep=true; }
+    else seen.set(k,r);
+  }
+  return dup;
+}
+function selectDuplicates(){
+  const n=markDuplicates();
+  refreshFilterOptions(); renderKPI();
+  if(!n){ applyFilters(); toast('✓ Tidak ada link dobel'); return; }
+  selected.clear();
+  DATA.forEach(r=>{ if(r._dup) selected.add(r._id); });
+  filters.dups=true; $('#fDups').checked=true;
+  applyFilters();
+  toast(fmt(n)+' link dobel dipilih — klik "Hapus terpilih" untuk membersihkan (sisa 1 per link)');
+}
+
+function openEdit(id){
+  const r=DATA.find(x=>x._id===id); if(!r) return;
+  editId=id;
+  $('#eStatus').innerHTML=Object.keys(STATUS).map(k=>`<option value="${k}" ${k===r.status?'selected':''}>${STATUS[k].label}</option>`).join('');
+  $('#eLink').value=r.link; $('#eRegion').value=r.region; $('#ePart').value=r.part;
+  $('#eTest').value=r.test; $('#eUpdate').value=r.update; $('#eLastpage').value=r.lastpage;
+  $('#editOverlay').classList.add('show');
+}
+function saveEdit(){
+  const r=DATA.find(x=>x._id===editId); if(!r) return;
+  pushUndo({kind:'edit',id:r._id,prev:{link:r.link,status:r.status,region:r.region,part:r.part,test:r.test,update:r.update,lastpage:r.lastpage,_flag:r._flag,updatedAt:r.updatedAt,_statusLocked:r._statusLocked}});
+  const raw=$('#eLink').value.trim();
+  const url=extractUrl(raw);            // embedded link -> di-generate jadi link bersih
+  r.link = url||raw;
+  const newStatus=$('#eStatus').value;
+  if(newStatus!==r.status) r._statusLocked=true;   // status diubah manual → kunci dari penimpaan sync
+  r.status=newStatus;
+  r.region=$('#eRegion').value.trim().toUpperCase();
+  r.part=$('#ePart').value.trim();
+  r.test=$('#eTest').value.trim();
+  r.update=$('#eUpdate').value.trim();
+  r.lastpage=$('#eLastpage').value.trim();
+  r.updatedAt=Date.now(); r._flag='upd';
+  $('#editOverlay').classList.remove('show');
+  markDuplicates(); refreshFilterOptions(); renderKPI(); applyFilters(); scheduleSave();
+  toast('✓ Perubahan disimpan');
+}
+function askDelete(id){
+  deleteMode='single'; deleteId=id;
+  const r=DATA.find(x=>x._id===id);
+  $('#confirmMsg').textContent = r&&r.link ? r.link : 'Baris ini akan dihapus dari dashboard.';
+  $('#confirmOverlay').classList.add('show');
+}
+function askBulkDelete(){
+  if(!selected.size) return;
+  deleteMode='bulk';
+  $('#confirmMsg').textContent = fmt(selected.size)+' link terpilih akan dihapus dari dashboard.';
+  $('#confirmOverlay').classList.add('show');
+}
+function doDelete(){
+  if(deleteMode==='bulk'){
+    const items=[]; DATA.forEach((r,i)=>{ if(selected.has(r._id)) items.push({i,row:r}); });
+    pushUndo({kind:'remove',items});
+    DATA=DATA.filter(x=>!selected.has(x._id)); selected.clear();
+  }else{
+    const i=DATA.findIndex(x=>x._id===deleteId);
+    if(i>=0) pushUndo({kind:'remove',items:[{i,row:DATA[i]}]});
+    DATA=DATA.filter(x=>x._id!==deleteId); selected.delete(deleteId);
+  }
+  deleteMode='single';
+  $('#confirmOverlay').classList.remove('show');
+  markDuplicates(); refreshFilterOptions(); renderKPI(); applyFilters(); scheduleSave();
+  toast('✓ Link dihapus — bisa diurungkan');
+}
+
+// ---------- import ----------
+function clearFlags(){DATA.forEach(r=>r._flag=null);}
+function importRows(rows,mode){
+  let added=0,updated=0;
+  clearFlags();
+  if(mode==='replace'){
+    pushUndo({kind:'snapshot',prev:DATA.slice()});
+    DATA=rows.map(r=>({...r,_flag:'new'}));
+    added=rows.length; selected.clear();
+  }else if(mode==='append'){
+    rows.forEach(r=>{DATA.push({...r,_flag:'new'});added++;});
+  }else{ // merge
+    const idx=new Map(); DATA.forEach((r,i)=>idx.set(r.link,i));
+    rows.forEach(r=>{
+      if(r.link && idx.has(r.link)){
+        const i=idx.get(r.link);
+        DATA[i]={...DATA[i],...r,_flag:'upd',updatedAt:Date.now()};
+        updated++;
+      }else{ DATA.push({...r,_flag:'new'}); idx.set(r.link,DATA.length-1); added++; }
+    });
+  }
+  LOG.unshift({ts:Date.now(),added,updated,mode,total:DATA.length});
+  markDuplicates(); refreshFilterOptions(); renderKPI(); applyFilters(); renderLog(); scheduleSave();
+  toast(`✓ ${added} baru · ${updated} di-update`);
+}
+function renderLog(){
+  if(!LOG.length){$('#logList').innerHTML='<div class="logrow"><span class="ld" style="color:var(--muted)">Belum ada pembaruan.</span></div>';return;}
+  $('#logList').innerHTML=LOG.slice(0,12).map(l=>{
+    const d=new Date(l.ts);
+    const t=d.toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+    return `<div class="logrow"><span class="lt">${t}</span><span class="ld"><b>+${fmt(l.added)}</b> baru, <b style="color:var(--amber)">${fmt(l.updated)}</b> di-update <span style="color:var(--muted-2)">· mode ${l.mode} · total ${fmt(l.total)}</span></span></div>`;
+  }).join('');
+}
+
+// ---------- parse files / text ----------
+// baca sel sekaligus ambil hyperlink yang tertanam (cell.l.Target) bila ada
+function sheetToMatrix(ws){
+  if(!ws['!ref']) return [];
+  const range=XLSX.utils.decode_range(ws['!ref']);
+  const mat=[];
+  for(let R=range.s.r;R<=range.e.r;R++){
+    const row=[];
+    for(let C=range.s.c;C<=range.e.c;C++){
+      const cell=ws[XLSX.utils.encode_cell({r:R,c:C})];
+      if(!cell){row.push('');continue;}
+      let v = cell.w!==undefined?cell.w:(cell.v!==undefined?cell.v:'');
+      if(cell.l && cell.l.Target && /^https?:|\//i.test(cell.l.Target)) v=cell.l.Target; // embedded link
+      row.push(v);
+    }
+    mat.push(row);
+  }
+  return mat;
+}
+function parseFile(file){
+  const name=file.name.toLowerCase();
+  if(name.endsWith('.txt')){
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const rows=parseText(e.target.result);
+        if(!rows||!rows.length){toast('⚠ Tidak ada baris terbaca di file .txt');return;}
+        pendingRows=rows; $('#doImport').disabled=false;
+        toast(`File .txt terbaca: ${rows.length} baris siap diproses`);
+      }catch(err){toast('⚠ Gagal baca file .txt: '+err.message);}
+    };
+    reader.readAsText(file,'UTF-8');
+    return;
+  }
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const wb=XLSX.read(e.target.result,{type:'binary'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const matrix=sheetToMatrix(ws);
+      const rows=rowsFromMatrix(matrix);
+      if(!rows.length){toast('⚠ Tidak ada baris terbaca');return;}
+      pendingRows=rows; $('#doImport').disabled=false;
+      toast(`File terbaca: ${rows.length} baris siap diproses`);
+    }catch(err){toast('⚠ Gagal baca file: '+err.message);}
+  };
+  reader.readAsBinaryString(file);
+}
+function parseText(txt){
+  txt=txt.trim(); if(!txt) return null;
+  const lines=txt.split(/\r?\n/).filter(l=>l.trim());
+  let delim=null;
+  if(txt.includes('\t')) delim='\t';
+  else if(lines[0].includes(',') && Object.keys(buildMap(lines[0].split(','))).length>=2) delim=',';
+  if(delim){ return rowsFromMatrix(lines.map(l=>l.split(delim).map(c=>c.trim()))); }
+  // teks bebas / note: ekstrak URL yang tertanam di dalam kalimat
+  const urls=[];
+  lines.forEach(l=>{ let m,found=false; URL_RE.lastIndex=0;
+    while((m=URL_RE.exec(l))){ urls.push(m[0]); found=true; }
+    if(!found) urls.push(l.trim());     // tidak ada URL: pakai baris apa adanya
+  });
+  return rowsFromMatrix([['link'], ...urls.map(u=>[u])]);
+}
+
+// ---------- toast ----------
+let toastT;
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600);}
+
+// ---------- export ----------
+function exportXlsx(){
+  if(!DATA.length){toast('Tidak ada data untuk di-export');return;}
+  const aoa=[['Name','Link','Test','Status','Link Part','Date','Region','Update','Last Page','Active']];
+  DATA.forEach((r,i)=>aoa.push([i+1,r.link,r.test,STATUS[r.status].label,r.part,r.date,r.region,r.inputAt?new Date(r.inputAt).toLocaleDateString('id-ID'):'',r.lastpage,r.active]));
+  const ws=XLSX.utils.aoa_to_sheet(aoa);
+  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Links');
+  XLSX.writeFile(wb,'link-monitor-'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+
+// ---------- events ----------
+$('#importBtn').onclick=()=>{$('#overlay').classList.add('show');};
+$('#closeModal').onclick=$('#cancelImport').onclick=()=>{$('#overlay').classList.remove('show');pendingRows=null;$('#doImport').disabled=true;$('#pasteArea').value='';$('#fileInput').value='';};
+$('#overlay').onclick=e=>{if(e.target===$('#overlay'))$('#cancelImport').click();};
+$('#drop').onclick=()=>$('#fileInput').click();
+$('#fileInput').onchange=e=>{if(e.target.files[0])parseFile(e.target.files[0]);};
+['dragover','dragenter'].forEach(ev=>$('#drop').addEventListener(ev,e=>{e.preventDefault();$('#drop').classList.add('over');}));
+['dragleave','drop'].forEach(ev=>$('#drop').addEventListener(ev,e=>{e.preventDefault();$('#drop').classList.remove('over');}));
+$('#drop').addEventListener('drop',e=>{if(e.dataTransfer.files[0])parseFile(e.dataTransfer.files[0]);});
+$('#pasteArea').oninput=e=>{const v=e.target.value.trim();$('#doImport').disabled=!(v||pendingRows);};
+$('#modes').querySelectorAll('.mode').forEach(m=>m.onclick=()=>{$('#modes').querySelectorAll('.mode').forEach(x=>x.classList.remove('sel'));m.classList.add('sel');importMode=m.dataset.mode;});
+$('#doImport').onclick=()=>{
+  let rows=pendingRows;
+  const txt=$('#pasteArea').value.trim();
+  if(!rows && txt) rows=parseText(txt);
+  if(!rows||!rows.length){toast('⚠ Tidak ada data');return;}
+  importRows(rows,importMode);
+  $('#cancelImport').click();
+};
+$('#exportBtn').onclick=exportXlsx;
+
+// edit + delete modal wiring
+$('#closeEdit').onclick=$('#cancelEdit').onclick=()=>$('#editOverlay').classList.remove('show');
+$('#editOverlay').onclick=e=>{if(e.target===$('#editOverlay'))$('#editOverlay').classList.remove('show');};
+$('#saveEdit').onclick=saveEdit;
+$('#deleteEdit').onclick=()=>{$('#editOverlay').classList.remove('show');askDelete(editId);};
+$('#cancelDelete').onclick=()=>$('#confirmOverlay').classList.remove('show');
+$('#confirmOverlay').onclick=e=>{if(e.target===$('#confirmOverlay'))$('#confirmOverlay').classList.remove('show');};
+$('#confirmDeleteBtn').onclick=doDelete;
+
+// bulk selection wiring
+$('#chkAll').onchange=e=>selectPage(e.target.checked);
+$('#selClear').onclick=clearSelection;
+$('#selDelete').onclick=askBulkDelete;
+$('#selAllFiltered').onclick=selectAllFiltered;
+
+$('#search').oninput=debounce(e=>{filters.q=e.target.value;applyFilters();},220);
+$('#fStatus').onchange=e=>{filters.status=e.target.value;applyFilters();};
+$('#fRegion').onchange=e=>{filters.region=e.target.value;applyFilters();};
+$('#fPart').onchange=e=>{filters.part=e.target.value;applyFilters();};
+$('#fSort').onchange=e=>{filters.sort=e.target.value;applyFilters();};
+$('#fFrom').onchange=e=>{filters.from=e.target.value;applyFilters();};
+$('#fTo').onchange=e=>{filters.to=e.target.value;applyFilters();};
+$('#fUpdated').onchange=e=>{filters.updated=e.target.checked;applyFilters();};
+$('#fDups').onchange=e=>{filters.dups=e.target.checked;applyFilters();};
+$('#bulkStatusApply').onclick=()=>{ const v=$('#bulkStatus').value; if(!v){toast('Pilih status dulu');return;} bulkSetStatus(v); $('#bulkStatus').value=''; };
+$('#dupBtn').onclick=selectDuplicates;
+$('#undoBtn').onclick=undo;
+
+// google drive wiring
+$('#driveBtn').onclick=()=>{$('#driveOverlay').classList.add('show');gdUpdateStatus();};
+$('#closeDrive').onclick=()=>$('#driveOverlay').classList.remove('show');
+$('#driveOverlay').onclick=e=>{if(e.target===$('#driveOverlay'))$('#driveOverlay').classList.remove('show');};
+$('#driveSaveCfg').onclick=async()=>{
+  GD.clientId=$('#driveClientId').value.trim(); GD.tokenClient=null;
+  try{ await store.set('gdrive:clientid',GD.clientId); }catch(_){}
+  gdUpdateStatus(); toast('✓ Client ID disimpan');
+};
+$('#driveConnect').onclick=async()=>{
+  if(!GD.clientId){ GD.clientId=$('#driveClientId').value.trim(); }
+  if(!GD.clientId){ toast('⚠ Isi Client ID dulu'); return; }
+  try{ await gdEnsureToken(); await gdFind(); gdUpdateStatus(); toast('✓ Terhubung ke Google Drive'); }
+  catch(e){ toast('⚠ '+e.message); gdUpdateStatus(); }
+};
+$('#driveSaveNow').onclick=async()=>{ try{ await gdSave(); gdUpdateStatus(); toast('✓ Tersimpan ke Drive ('+fmt(DATA.length)+' baris)'); }catch(e){ toast('⚠ Gagal simpan: '+e.message); } };
+$('#driveLoadNow').onclick=async()=>{ try{ await gdLoad(); toast('✓ Dimuat dari Drive: '+fmt(DATA.length)+' baris'); }catch(e){ toast('⚠ Gagal muat: '+e.message); } };
+$('#sheetImport').onclick=async()=>{ try{ const n=await gsImport(); toast('✓ Impor dari Sheet: '+fmt(n)+' baris'); }catch(e){ toast('⚠ '+e.message); } };
+$('#pubImport').onclick=async()=>{ const b=$('#pubImport'); b.disabled=true; try{ const n=await gsImportPublic(); toast('✓ Impor dari link: '+fmt(n)+' baris'); }catch(e){ toast('⚠ '+e.message); } b.disabled=false; };
+$('#driveAutosync').onchange=async e=>{ GD.autosync=e.target.checked; try{ await store.set('gdrive:autosync',GD.autosync?'1':'0'); }catch(_){} toast(GD.autosync?'Sinkron otomatis aktif':'Sinkron otomatis nonaktif'); };
+
+// auto-sync (Sheet publik) wiring
+$('#autoUrl').oninput=e=>{ AS.url=e.target.value.trim(); asSaveCfg(); };
+$('#autoInterval').onchange=e=>{ AS.interval=+e.target.value||60000; asSaveCfg(); if(AS.on) asStart(); };
+$('#autoUpdateExisting').onchange=e=>{ AS.updateExisting=e.target.checked; asSaveCfg(); };
+$('#autoSyncNow').onclick=()=>{ AS.url=$('#autoUrl').value.trim(); asSaveCfg(); asTick(true); };
+$('#autoSyncToggle').onchange=async e=>{
+  AS.on=e.target.checked; AS.url=$('#autoUrl').value.trim(); await asSaveCfg();
+  if(AS.on){ asStatus('Sinkron otomatis aktif — mengecek…','on'); asStart(); toast('Sinkron otomatis aktif'); }
+  else{ asStop(); asStatus('Sinkron otomatis dimatikan.'); toast('Sinkron otomatis nonaktif'); }
+};
+
+// ---------- kunci akses (username/password, sisi-browser) ----------
+const AUTH={user:'',salt:'',hash:'',ok:false};
+function weakHash(s){ let h=0x811c9dc5>>>0; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193)>>>0; } return ('0000000'+h.toString(16)).slice(-8); }
+async function sha256(s){
+  try{ if(window.crypto&&crypto.subtle){ const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''); } }catch(_){}
+  return 'w:'+weakHash(s);   // cadangan bila bukan https/localhost (lebih lemah)
+}
+function randSalt(){ const a=new Uint8Array(16); try{ crypto.getRandomValues(a); }catch(_){ for(let i=0;i<16;i++)a[i]=Math.floor(Math.random()*256); } return [...a].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+async function authLoad(){
+  try{ const u=await store.get('auth:user'); if(u) AUTH.user=u.value; }catch(_){}
+  try{ const s=await store.get('auth:salt'); if(s) AUTH.salt=s.value; }catch(_){}
+  try{ const h=await store.get('auth:hash'); if(h) AUTH.hash=h.value; }catch(_){}
+}
+function authConfigured(){ return !!(AUTH.user && AUTH.hash); }
+async function authSetup(user,pass){
+  AUTH.user=user; AUTH.salt=randSalt(); AUTH.hash=await sha256(AUTH.salt+'|'+pass);
+  await store.set('auth:user',AUTH.user); await store.set('auth:salt',AUTH.salt); await store.set('auth:hash',AUTH.hash);
+}
+async function authVerify(user,pass){ if(user!==AUTH.user) return false; return (await sha256(AUTH.salt+'|'+pass))===AUTH.hash; }
+function authReveal(){ AUTH.ok=true; const o=$('#authOverlay'); if(o) o.classList.remove('show'); }
+function showAuth(){
+  const setup=!authConfigured();
+  $('#authSetup').style.display=setup?'':'none';
+  $('#authLogin').style.display=setup?'none':'';
+  $('#suErr').textContent=''; $('#liErr').textContent='';
+  $('#authOverlay').classList.add('show');
+  setTimeout(()=>{ (setup?$('#suUser'):$('#liUser')).focus(); },50);
+}
+// wiring auth
+$('#suBtn').onclick=async()=>{
+  const u=$('#suUser').value.trim(), p=$('#suPass').value, p2=$('#suPass2').value;
+  if(u.length<3){ $('#suErr').textContent='Username minimal 3 karakter.'; return; }
+  if(p.length<6){ $('#suErr').textContent='Password minimal 6 karakter.'; return; }
+  if(p!==p2){ $('#suErr').textContent='Password tidak sama.'; return; }
+  await authSetup(u,p); authReveal(); toast('✓ Akun dibuat — dashboard terkunci untuk perangkat ini');
+};
+$('#liBtn').onclick=async()=>{
+  const u=$('#liUser').value.trim(), p=$('#liPass').value;
+  if(await authVerify(u,p)){ $('#liPass').value=''; authReveal(); toast('✓ Berhasil masuk'); }
+  else{ $('#liErr').textContent='Username atau password salah.'; }
+};
+$('#liReset').onclick=async()=>{
+  if(!confirm('Reset kredensial? Anda akan diminta membuat username/password baru. Data link tidak terhapus.')) return;
+  try{ await store.del('auth:user'); await store.del('auth:salt'); await store.del('auth:hash'); }catch(_){}
+  AUTH.user=''; AUTH.salt=''; AUTH.hash=''; showAuth();
+};
+$('#suPass2').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#suBtn').click(); });
+$('#liPass').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#liBtn').click(); });
+$('#logoutBtn').onclick=()=>{ AUTH.ok=false; showAuth(); };
+
+// ---------- init ----------
+(async function(){
+  await authLoad(); showAuth();          // tampilkan kunci lebih dulu (dashboard tersembunyi di belakang)
+  await loadData();
+  markDuplicates(); refreshFilterOptions(); renderKPI(); applyFilters(); renderLog();
+  updateUndoBtn(); updateSaveState();
+  await gdConfigLoad(); gdUpdateStatus();
+  await asConfigLoad();
+})();
+</script>
+</body>
+</html>
