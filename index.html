@@ -472,30 +472,87 @@ textarea:focus{border-color:var(--cyan-dim);box-shadow:0 0 10px rgba(0,245,255,.
 .confirm-box{text-align:center;padding:8px 4px 4px}
 .confirm-icon{width:46px;height:46px;border:1px solid var(--red);background:var(--red-bg);border-radius:2px;display:grid;place-items:center;margin:0 auto 11px;box-shadow:0 0 14px rgba(255,34,68,.3)}
 .confirm-icon svg{width:20px;height:20px;color:var(--red);filter:drop-shadow(0 0 5px rgba(255,34,68,.5))}
+
+/* ── Admin panel ──────────────────────────────────── */
+.user-row{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--panel);border:1px solid var(--line-soft);border-radius:2px}
+.user-row .ur-name{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text);flex:1;letter-spacing:.04em}
+.user-row .ur-role{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:1px}
+.ur-role.admin{background:rgba(0,245,255,.1);border:1px solid rgba(0,245,255,.3);color:var(--cyan)}
+.ur-role.user{background:rgba(57,255,20,.07);border:1px solid rgba(57,255,20,.2);color:var(--green)}
+.ur-del{border:1px solid var(--line-soft);background:none;color:var(--muted-2);font-size:10px;font-family:'Share Tech Mono',monospace;padding:3px 8px;border-radius:2px;cursor:pointer;transition:.14s;letter-spacing:.06em;text-transform:uppercase}
+.ur-del:hover{border-color:var(--red);color:var(--red);box-shadow:0 0 8px rgba(255,34,68,.2)}
+.ur-promote{border:1px solid var(--line-soft);background:none;color:var(--muted-2);font-size:10px;font-family:'Share Tech Mono',monospace;padding:3px 8px;border-radius:2px;cursor:pointer;transition:.14s;letter-spacing:.06em;text-transform:uppercase}
+.ur-promote:hover{border-color:var(--cyan);color:var(--cyan)}
+
+
+.charts-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;margin-bottom:16px}
+@media(max-width:900px){.charts-grid{grid-template-columns:1fr}}
+
 </style>
 <body>
 <div class="auth-overlay show" id="authOverlay">
-  <div class="auth-card modal" style="padding:26px 24px">
-    <div class="auth-logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-    <div id="authSetup" style="display:none">
-      <h2>Buat akun akses</h2>
-      <p class="sub">Atur username &amp; password untuk mengunci dashboard ini di perangkat ini.</p>
-      <div class="fg full"><label>Username</label><input id="suUser" type="text" autocomplete="username" placeholder="Admin"></div>
-      <div class="fg full" style="margin-top:12px"><label>Password</label><input id="suPass" type="password" autocomplete="new-password" placeholder="minimal 6 karakter"></div>
-      <div class="fg full" style="margin-top:12px"><label>Ulangi password</label><input id="suPass2" type="password" autocomplete="new-password" placeholder="ketik ulang"></div>
-      <div class="auth-err" id="suErr"></div>
-      <button class="btn primary block" id="suBtn">Simpan &amp; masuk</button>
+  <div class="auth-card modal" id="authCard">
+    <div class="auth-logo" id="authLogoWrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
     </div>
+    <div id="authTitle" style="font-family:'Orbitron',monospace;font-weight:900;font-size:17px;text-align:center;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);text-shadow:0 0 10px rgba(0,245,255,.5);margin-bottom:4px"></div>
+    <div id="authSubtitle" class="sub" style="text-align:center;margin-bottom:18px"></div>
+    <div id="authLockBanner" style="display:none;background:rgba(255,34,68,.12);border:1px solid var(--red);border-radius:2px;padding:8px 12px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--red);text-align:center;margin-bottom:12px;letter-spacing:.04em"></div>
+
+    <!-- SETUP ADMIN (first time only) -->
+    <div id="authSetup" style="display:none">
+      <div class="fg full"><label>Admin Username</label><input id="suUser" type="text" autocomplete="username" placeholder="Nama admin utama"></div>
+      <div class="fg full" style="margin-top:10px"><label>Password <span style="color:var(--muted-2)">(min 8 karakter)</span></label><input id="suPass" type="password" autocomplete="new-password" placeholder="Gunakan password kuat"></div>
+      <div class="fg full" style="margin-top:10px"><label>Ulangi Password</label><input id="suPass2" type="password" autocomplete="new-password" placeholder="Ketik ulang password"></div>
+      <div class="fg full" style="margin-top:10px">
+        <label>Admin Key <span style="color:var(--muted-2)">(kunci rahasia — simpan baik-baik)</span></label>
+        <input id="suAdminKey" type="text" autocomplete="off" placeholder="Min 12 karakter, dibutuhkan untuk daftar user baru">
+        <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted-2);margin-top:3px;display:block">Admin Key digunakan untuk verifikasi pendaftaran user baru. Jangan bagikan ke sembarang orang.</span>
+      </div>
+      <div class="auth-err" id="suErr"></div>
+      <button class="btn primary block" id="suBtn">Buat Akun Admin &amp; Masuk</button>
+    </div>
+
+    <!-- LOGIN -->
     <div id="authLogin" style="display:none">
-      <h2>Masuk</h2>
-      <p class="sub">Dashboard ini terkunci. Masukkan kredensial Anda.</p>
-      <div class="fg full"><label>Username</label><input id="liUser" type="text" autocomplete="username" placeholder="username"></div>
-      <div class="fg full" style="margin-top:12px"><label>Password</label><input id="liPass" type="password" autocomplete="current-password" placeholder="password"></div>
+      <div class="fg full"><label>Username</label><input id="liUser" type="text" autocomplete="username" placeholder="Username Anda"></div>
+      <div class="fg full" style="margin-top:10px"><label>Password</label><input id="liPass" type="password" autocomplete="current-password" placeholder="Password Anda"></div>
       <div class="auth-err" id="liErr"></div>
       <button class="btn primary block" id="liBtn">Masuk</button>
-      <button class="linkbtn" id="liReset" style="display:block;margin:12px auto 0">Lupa / reset kredensial</button>
+      <div style="display:flex;justify-content:space-between;margin-top:10px">
+        <button class="linkbtn" id="showRegister">Daftar sebagai user baru</button>
+        <button class="linkbtn" id="liReset">Reset (Admin Key)</button>
+      </div>
     </div>
-    <div class="note-box" style="margin-top:18px;font-size:11px">Kunci ini bekerja di sisi browser sebagai <b>penghalang akses kasual</b>, bukan keamanan tingkat server. lindungi juga di lapisan hosting/Sheet (lihat catatan).</div>
+
+    <!-- REGISTER (requires Admin Key) -->
+    <div id="authRegister" style="display:none">
+      <div class="fg full"><label>Username Baru</label><input id="regUser" type="text" autocomplete="username" placeholder="Pilih username"></div>
+      <div class="fg full" style="margin-top:10px"><label>Password <span style="color:var(--muted-2)">(min 8 karakter)</span></label><input id="regPass" type="password" autocomplete="new-password" placeholder="Password kuat"></div>
+      <div class="fg full" style="margin-top:10px"><label>Ulangi Password</label><input id="regPass2" type="password" autocomplete="new-password" placeholder="Ketik ulang"></div>
+      <div class="fg full" style="margin-top:10px">
+        <label>Admin Key <span style="color:var(--muted-2)">(minta ke administrator)</span></label>
+        <input id="regAdminKey" type="password" autocomplete="off" placeholder="Masukkan Admin Key dari administrator">
+      </div>
+      <div class="auth-err" id="regErr"></div>
+      <button class="btn primary block" id="regBtn">Daftar</button>
+      <button class="linkbtn" id="showLogin" style="display:block;margin:10px auto 0">Sudah punya akun? Masuk</button>
+    </div>
+
+    <!-- ADMIN RESET -->
+    <div id="authReset" style="display:none">
+      <p class="sub" style="text-align:left;margin-bottom:14px">Masukkan Admin Key untuk mereset kredensial akun. Data tidak terhapus.</p>
+      <div class="fg full"><label>Admin Key</label><input id="rstAdminKey" type="password" autocomplete="off" placeholder="Admin Key rahasia"></div>
+      <div class="fg full" style="margin-top:10px"><label>Username yang akan direset</label><input id="rstUser" type="text" autocomplete="username" placeholder="Username target"></div>
+      <div class="fg full" style="margin-top:10px"><label>Password Baru</label><input id="rstPass" type="password" placeholder="Password baru min 8 karakter"></div>
+      <div class="auth-err" id="rstErr"></div>
+      <button class="btn primary block" id="rstBtn">Reset Password</button>
+      <button class="linkbtn" id="showLoginFromReset" style="display:block;margin:10px auto 0">Kembali ke login</button>
+    </div>
+
+    <div id="authNote" style="display:none" class="note-box" style="margin-top:14px;font-size:10px">
+      Keamanan sisi-browser: data dienkripsi dengan SHA-256+salt. Admin Key disimpan sebagai hash — tidak ada yang bisa membacanya, termasuk admin. Jangan hilangkan Admin Key.
+    </div>
   </div>
 </div>
 
@@ -525,6 +582,7 @@ textarea:focus{border-color:var(--cyan-dim);box-shadow:0 0 10px rgba(0,245,255,.
       </div>
     </div>
     <div class="head-actions">
+      <button class="btn ghost" id="adminPanelBtn" style="display:none" onclick="openAdminPanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Admin</button>
       <button class="btn ghost" id="logoutBtn" title="Kunci dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Keluar</button>
       <button class="btn ghost" id="undoBtn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>Urungkan</button>
       <button class="btn ghost" id="driveBtn"><span class="ddot" id="driveDot"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7.71 3.5 1.15 15l3.43 6 6.56-11.5z"/><path d="M22.85 15 16.29 3.5H9.43l6.56 11.5z"/><path d="M4.58 21h13.27l3.43-6H8.01z"/></svg>Google</button>
@@ -537,9 +595,19 @@ textarea:focus{border-color:var(--cyan-dim);box-shadow:0 0 10px rgba(0,245,255,.
 
   <div class="kpis" id="kpis"></div>
 
-  <div class="chartpanel">
-    <div class="chart-head">Distribusi per kategori <span id="chartTotal"></span></div>
-    <div class="chartbars" id="chartBars"></div>
+  <div class="charts-grid">
+    <div class="chartpanel">
+      <div class="chart-head">Status <span id="chartTotal"></span></div>
+      <div class="chartbars" id="chartBars"></div>
+    </div>
+    <div class="chartpanel">
+      <div class="chart-head">Region <span id="chartRegionTotal"></span></div>
+      <div class="chartbars" id="chartRegionBars"></div>
+    </div>
+    <div class="chartpanel">
+      <div class="chart-head">Link Part <span id="chartPartTotal"></span></div>
+      <div class="chartbars" id="chartPartBars"></div>
+    </div>
   </div>
 
   <div class="controls">
@@ -578,7 +646,7 @@ textarea:focus{border-color:var(--cyan-dim);box-shadow:0 0 10px rgba(0,245,255,.
         <option value="lost">Lost File</option>
         <option value="skip">Skip</option>
         <option value="broken">Broken Link</option>
-        <option value="blank">Blank</option>
+        <option value="blank">Kosong / Baru</option>
       </select>
       <button class="btn" id="bulkStatusApply">Terapkan</button>
       <button class="linkbtn" id="selClear">Bersihkan pilihan</button>
@@ -1069,7 +1137,7 @@ const STATUS = {
   lost:{label:'Lost File',color:'orange'},
   skip:{label:'Skip',color:'gray'},
   broken:{label:'Broken Link',color:'red'},
-  blank:{label:'Blank',color:'blank'}
+  blank:{label:'—',color:'blank'}
 };
 function canonStatus(raw){
   const s = String(raw||'').toLowerCase().trim();
@@ -1078,7 +1146,7 @@ function canonStatus(raw){
   if(s.includes('lost')||s.includes('hilang')) return 'lost';
   if(s.includes('broken')||s.includes('rusak')||s.includes('mati')) return 'broken';
   if(s.includes('skip')||s.includes('lewat')) return 'skip';
-  if(s.includes('blank')||s.includes('kosong')) return 'blank';
+  if(s.includes('blank')||s.includes('kosong')||s.includes('baru')) return 'blank';
   if(s.includes('complete')||s.includes('selesai')||s==='ok'||s==='done') return 'complete';
   return 'blank';
 }
@@ -1642,7 +1710,7 @@ function renderKPI(){
     {key:'lost',lab:'Lost File',num:k.lost,color:'orange',pctTxt:pct(k.lost)+'%'},
     {key:'skip',lab:'Skip',num:k.skip,color:'gray',pctTxt:pct(k.skip)+'%'},
     {key:'broken',lab:'Broken Link',num:k.broken,color:'red',pctTxt:pct(k.broken)+'%'},
-    {key:'blank',lab:'Blank',num:k.blank,color:'blank',pctTxt:pct(k.blank)+'%'}
+    {key:'blank',lab:'Kosong / Baru',num:k.blank,color:'blank',pctTxt:pct(k.blank)+'%'}
   ];
   $('#kpis').innerHTML=cards.map(c=>{
     const cv = c.color==='maroon' ? '--cyan' : COLOR[c.color];
@@ -1657,6 +1725,8 @@ function renderKPI(){
     </div>`;
   }).join('');
   renderChart(k);
+  renderChartRegion();
+  renderChartPart();
 }
 function renderChart(k){
   const cats=[['complete','green'],['uncomplete','amber'],['lost','orange'],['skip','gray'],['broken','red'],['blank','blank']];
@@ -1668,6 +1738,45 @@ function renderChart(k){
       <div class="cl">${STATUS[key].label}</div>
       <div class="ct"><div class="cf" style="width:${(v/max*100).toFixed(1)}%;background:var(${COLOR[col]});box-shadow:0 0 6px var(${COLOR[col]})"></div></div>
       <div class="cv"><b style="color:var(${COLOR[col]})">${fmt(v)}</b> <span>${pct.toFixed(1)}%</span></div>
+    </div>`;
+  }).join('');
+}
+
+function renderChartRegion(){
+  const counts={};
+  DATA.forEach(r=>{ if(r.region) counts[r.region]=(counts[r.region]||0)+1; });
+  const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const total=entries.reduce((s,[,v])=>s+v,0);
+  const max=Math.max(1,...entries.map(([,v])=>v));
+  const REGION_COLORS=['--cyan','--green','--amber','--orange','--red','--magenta','--cyan-dim','--green-dim','--amber-dim','--orange'];
+  $('#chartRegionTotal').textContent = total ? '· '+fmt(total)+' link' : '';
+  if(!entries.length){ $('#chartRegionBars').innerHTML='<div class="mono" style="padding:10px 0;color:var(--muted-2)">Belum ada data region</div>'; return; }
+  $('#chartRegionBars').innerHTML=entries.map(([key,v],i)=>{
+    const col=REGION_COLORS[i%REGION_COLORS.length];
+    const pct=total?(v/total*100):0;
+    return `<div class="cbar">
+      <div class="cl">${esc(key)}</div>
+      <div class="ct"><div class="cf" style="width:${(v/max*100).toFixed(1)}%;background:var(${col});box-shadow:0 0 5px var(${col})"></div></div>
+      <div class="cv"><b style="color:var(${col})">${fmt(v)}</b> <span>${pct.toFixed(1)}%</span></div>
+    </div>`;
+  }).join('');
+}
+function renderChartPart(){
+  const counts={};
+  DATA.forEach(r=>{ if(r.part) counts[r.part]=(counts[r.part]||0)+1; });
+  const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const total=entries.reduce((s,[,v])=>s+v,0);
+  const max=Math.max(1,...entries.map(([,v])=>v));
+  const PART_COLORS=['--magenta','--cyan','--amber','--green','--orange','--red','--cyan-dim','--amber-dim'];
+  $('#chartPartTotal').textContent = total ? '· '+fmt(total)+' link' : '';
+  if(!entries.length){ $('#chartPartBars').innerHTML='<div class="mono" style="padding:10px 0;color:var(--muted-2)">Belum ada data link part</div>'; return; }
+  $('#chartPartBars').innerHTML=entries.map(([key,v],i)=>{
+    const col=PART_COLORS[i%PART_COLORS.length];
+    const pct=total?(v/total*100):0;
+    return `<div class="cbar">
+      <div class="cl" style="font-size:9px">${esc(key)}</div>
+      <div class="ct"><div class="cf" style="width:${(v/max*100).toFixed(1)}%;background:var(${col});box-shadow:0 0 5px var(${col})"></div></div>
+      <div class="cv"><b style="color:var(${col})">${fmt(v)}</b> <span>${pct.toFixed(1)}%</span></div>
     </div>`;
   }).join('');
 }
@@ -2219,55 +2328,357 @@ $('#autoSyncToggle').onchange=async e=>{
   else{ asStop(); asStatus('Sinkron otomatis dimatikan.'); toast('Sinkron otomatis nonaktif'); }
 };
 
-// ---------- kunci akses (username/password, sisi-browser) ----------
-const AUTH={user:'',salt:'',hash:'',ok:false};
-function weakHash(s){ let h=0x811c9dc5>>>0; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193)>>>0; } return ('0000000'+h.toString(16)).slice(-8); }
+
+// ══════════════════════════════════════════════════════════════
+// SISTEM KEAMANAN — Multi-user + Admin Key + Brute-force protection
+// ══════════════════════════════════════════════════════════════
+const SEC = {
+  // Brute-force: max 5 attempts per 15 min window
+  MAX_ATTEMPTS: 5,
+  LOCKOUT_MS:   15 * 60 * 1000,
+  // Session timeout: 8 hours of inactivity
+  SESSION_TIMEOUT_MS: 8 * 60 * 60 * 1000,
+  // Minimum password length
+  MIN_PASS: 8,
+  // Minimum admin key length
+  MIN_KEY: 12
+};
+
+// Runtime auth state
+const AUTH = {
+  currentUser: null,   // {username, role:'admin'|'user'}
+  sessionStart: 0,
+  loginAttempts: 0,
+  lockUntil: 0,
+  ok: false
+};
+
+// ── Crypto helpers ────────────────────────────────────────────
+function weakHash(s){let h=0x811c9dc5>>>0;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return('0000000'+h.toString(16)).slice(-8);}
 async function sha256(s){
-  try{ if(window.crypto&&crypto.subtle){ const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''); } }catch(_){}
-  return 'w:'+weakHash(s);   // cadangan bila bukan https/localhost (lebih lemah)
+  try{if(window.crypto&&crypto.subtle){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}}catch(_){}
+  return 'w:'+weakHash(s);
 }
-function randSalt(){ const a=new Uint8Array(16); try{ crypto.getRandomValues(a); }catch(_){ for(let i=0;i<16;i++)a[i]=Math.floor(Math.random()*256); } return [...a].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+function randSalt(){const a=new Uint8Array(16);try{crypto.getRandomValues(a);}catch(_){for(let i=0;i<16;i++)a[i]=Math.floor(Math.random()*256);}return[...a].map(x=>x.toString(16).padStart(2,'0')).join('');}
+async function hashPass(salt, pass){ return sha256(salt + '|' + pass + '|lnkmon2025'); }
+async function hashAdminKey(key){ return sha256('adminkey:' + key + '|lnkmon2025'); }
+
+// ── Storage helpers ───────────────────────────────────────────
+async function secGet(k){ try{const r=await store.get(k);return r?r.value:null;}catch(_){return null;} }
+async function secSet(k,v){ try{await store.set(k,v);}catch(_){} }
+async function secDel(k){ try{await store.del(k);}catch(_){} }
+
+// ── User DB ───────────────────────────────────────────────────
+// users:list = JSON array of {username, role}
+// users:pw:{username} = JSON {salt, hash}
+async function getUsers(){
+  const r = await secGet('users:list');
+  return r ? JSON.parse(r) : [];
+}
+async function saveUsers(list){ await secSet('users:list', JSON.stringify(list)); }
+async function userExists(username){
+  const list = await getUsers();
+  return list.some(u => u.username.toLowerCase() === username.toLowerCase());
+}
+async function getAdminKeyHash(){ return secGet('auth:adminkeyhash'); }
+async function isAdminKeySet(){ return !!(await getAdminKeyHash()); }
+
+// ── Brute-force state (sessionStorage so it resets on tab close) ──
+function bfGet(){ try{return JSON.parse(sessionStorage.getItem('_lm_bf')||'{}');}catch(_){return{};} }
+function bfSet(o){ try{sessionStorage.setItem('_lm_bf',JSON.stringify(o));}catch(_){} }
+function bfCheck(){
+  const s=bfGet();
+  const now=Date.now();
+  if(s.lockUntil && now < s.lockUntil) return { locked:true, secsLeft: Math.ceil((s.lockUntil-now)/1000) };
+  if(s.lockUntil && now >= s.lockUntil){ bfSet({}); }
+  return { locked:false, attempts: s.attempts||0 };
+}
+function bfFail(){
+  const s=bfGet(); const now=Date.now();
+  const attempts = (s.attempts||0) + 1;
+  if(attempts >= SEC.MAX_ATTEMPTS){
+    bfSet({ attempts, lockUntil: now + SEC.LOCKOUT_MS });
+  } else {
+    bfSet({ attempts, lockUntil: s.lockUntil||0 });
+  }
+  return attempts;
+}
+function bfReset(){ bfSet({}); }
+
+// ── Session management ────────────────────────────────────────
+function sessionStart(username, role){
+  AUTH.ok = true;
+  AUTH.currentUser = { username, role };
+  AUTH.sessionStart = Date.now();
+  try{ sessionStorage.setItem('_lm_sess', JSON.stringify({ username, role, t: Date.now() })); }catch(_){}
+  bfReset();
+  updateHeaderForRole();
+}
+function sessionRestore(){
+  try{
+    const s = JSON.parse(sessionStorage.getItem('_lm_sess')||'null');
+    if(!s) return false;
+    if(Date.now() - s.t > SEC.SESSION_TIMEOUT_MS){ sessionStorage.removeItem('_lm_sess'); return false; }
+    AUTH.ok = true; AUTH.currentUser = { username:s.username, role:s.role }; AUTH.sessionStart = s.t;
+    updateHeaderForRole();
+    return true;
+  }catch(_){ return false; }
+}
+function sessionEnd(){
+  AUTH.ok = false; AUTH.currentUser = null;
+  try{ sessionStorage.removeItem('_lm_sess'); }catch(_){}
+}
+// Auto-expire: check every 60s
+setInterval(()=>{
+  if(!AUTH.ok) return;
+  if(Date.now() - AUTH.sessionStart > SEC.SESSION_TIMEOUT_MS){
+    sessionEnd(); showAuth('login');
+    toast('⚠ Sesi berakhir karena tidak aktif — silakan login kembali');
+  }
+}, 60000);
+// Renew on user interaction
+document.addEventListener('click', ()=>{ if(AUTH.ok) AUTH.sessionStart = Date.now(); });
+document.addEventListener('keydown', ()=>{ if(AUTH.ok) AUTH.sessionStart = Date.now(); });
+
+// ── Role-based UI ─────────────────────────────────────────────
+function updateHeaderForRole(){
+  if(!AUTH.currentUser) return;
+  const isAdmin = AUTH.currentUser.role === 'admin';
+  // Show admin panel button only for admin
+  const adminBtn = document.getElementById('adminPanelBtn');
+  if(adminBtn) adminBtn.style.display = isAdmin ? '' : 'none';
+  // Show username in logout button
+  const logoutBtn = document.getElementById('logoutBtn');
+  if(logoutBtn) logoutBtn.title = 'Logout: ' + AUTH.currentUser.username + ' (' + AUTH.currentUser.role + ')';
+}
+
+// ── Auth load (check if system configured) ────────────────────
 async function authLoad(){
-  try{ const u=await store.get('auth:user'); if(u) AUTH.user=u.value; }catch(_){}
-  try{ const s=await store.get('auth:salt'); if(s) AUTH.salt=s.value; }catch(_){}
-  try{ const h=await store.get('auth:hash'); if(h) AUTH.hash=h.value; }catch(_){}
+  // Check if admin account exists (migrating from old system too)
+  const users = await getUsers();
+  // Legacy migration: if old auth:user exists but users:list is empty
+  if(!users.length){
+    const oldUser = await secGet('auth:user');
+    const oldHash = await secGet('auth:hash');
+    const oldSalt = await secGet('auth:salt');
+    if(oldUser && oldHash){
+      // Migrate old single-user to new system as admin
+      const migrated = [{ username: oldUser, role: 'admin' }];
+      await saveUsers(migrated);
+      await secSet('users:pw:'+oldUser, JSON.stringify({ salt: oldSalt||'', hash: oldHash }));
+      // Generate a random admin key if not present (admin must set it manually)
+      const existingKey = await getAdminKeyHash();
+      if(!existingKey){
+        // Flag: needs admin key setup after login
+        await secSet('auth:needsKeySetup', '1');
+      }
+    }
+  }
 }
-function authConfigured(){ return !!(AUTH.user && AUTH.hash); }
-async function authSetup(user,pass){
-  AUTH.user=user; AUTH.salt=randSalt(); AUTH.hash=await sha256(AUTH.salt+'|'+pass);
-  await store.set('auth:user',AUTH.user); await store.set('auth:salt',AUTH.salt); await store.set('auth:hash',AUTH.hash);
+
+function authConfigured(){ return true; } // always show login, not setup check
+
+// ── Show/hide auth screens ────────────────────────────────────
+async function showAuth(screen){
+  const panels = ['authSetup','authLogin','authRegister','authReset'];
+  panels.forEach(p => document.getElementById(p).style.display='none');
+  document.getElementById('authNote').style.display = 'none';
+  document.getElementById('authLockBanner').style.display = 'none';
+  document.getElementById('suErr').textContent='';
+  document.getElementById('liErr').textContent='';
+  document.getElementById('regErr').textContent='';
+  document.getElementById('rstErr').textContent='';
+  document.getElementById('authOverlay').classList.add('show');
+
+  const users = await getUsers();
+  const hasAdmin = users.some(u => u.role==='admin');
+
+  if(!hasAdmin || screen==='setup'){
+    // First time: setup admin account
+    document.getElementById('authTitle').textContent='Setup Administrator';
+    document.getElementById('authSubtitle').textContent='Buat akun admin pertama untuk mengaktifkan sistem';
+    document.getElementById('authSetup').style.display='';
+    document.getElementById('authNote').style.display='';
+    setTimeout(()=>document.getElementById('suUser').focus(),50);
+  } else if(screen==='register'){
+    document.getElementById('authTitle').textContent='Daftar Akun Baru';
+    document.getElementById('authSubtitle').textContent='Diperlukan Admin Key dari administrator';
+    document.getElementById('authRegister').style.display='';
+    setTimeout(()=>document.getElementById('regUser').focus(),50);
+  } else if(screen==='reset'){
+    document.getElementById('authTitle').textContent='Reset Password';
+    document.getElementById('authSubtitle').textContent='Verifikasi dengan Admin Key';
+    document.getElementById('authReset').style.display='';
+    setTimeout(()=>document.getElementById('rstAdminKey').focus(),50);
+  } else {
+    document.getElementById('authTitle').textContent='Akses Dashboard';
+    document.getElementById('authSubtitle').textContent='Masuk dengan akun Anda';
+    document.getElementById('authLogin').style.display='';
+    // Brute-force banner
+    const bf = bfCheck();
+    if(bf.locked){
+      document.getElementById('authLockBanner').style.display='';
+      document.getElementById('authLockBanner').textContent=
+        '⛔ Terlalu banyak percobaan gagal. Coba lagi dalam ' + bf.secsLeft + ' detik.';
+    }
+    setTimeout(()=>document.getElementById('liUser').focus(),50);
+  }
+
+  // After login: check if admin needs to set up admin key
+  if(AUTH.ok && AUTH.currentUser?.role==='admin'){
+    const needsKey = await secGet('auth:needsKeySetup');
+    if(needsKey==='1'){
+      toast('⚠ Admin: Anda perlu mengatur Admin Key di panel Admin → Security untuk memungkinkan registrasi user baru.');
+    }
+  }
 }
-async function authVerify(user,pass){ if(user!==AUTH.user) return false; return (await sha256(AUTH.salt+'|'+pass))===AUTH.hash; }
-function authReveal(){ AUTH.ok=true; const o=$('#authOverlay'); if(o) o.classList.remove('show'); }
-function showAuth(){
-  const setup=!authConfigured();
-  $('#authSetup').style.display=setup?'':'none';
-  $('#authLogin').style.display=setup?'none':'';
-  $('#suErr').textContent=''; $('#liErr').textContent='';
-  $('#authOverlay').classList.add('show');
-  setTimeout(()=>{ (setup?$('#suUser'):$('#liUser')).focus(); },50);
+
+function authReveal(){
+  document.getElementById('authOverlay').classList.remove('show');
 }
-// wiring auth
-$('#suBtn').onclick=async()=>{
-  const u=$('#suUser').value.trim(), p=$('#suPass').value, p2=$('#suPass2').value;
-  if(u.length<3){ $('#suErr').textContent='Username minimal 3 karakter.'; return; }
-  if(p.length<6){ $('#suErr').textContent='Password minimal 6 karakter.'; return; }
-  if(p!==p2){ $('#suErr').textContent='Password tidak sama.'; return; }
-  await authSetup(u,p); authReveal(); toast('✓ Akun dibuat — dashboard terkunci untuk perangkat ini');
+
+// ── Setup admin (first time) ──────────────────────────────────
+$('#suBtn').onclick = async () => {
+  const u = $('#suUser').value.trim();
+  const p = $('#suPass').value;
+  const p2= $('#suPass2').value;
+  const k = $('#suAdminKey').value.trim();
+  const err = (m) => { $('#suErr').textContent=m; };
+  if(u.length < 3){ err('Username minimal 3 karakter'); return; }
+  if(/[^a-zA-Z0-9_-]/.test(u)){ err('Username: hanya huruf, angka, _, -'); return; }
+  if(p.length < SEC.MIN_PASS){ err('Password minimal '+SEC.MIN_PASS+' karakter'); return; }
+  if(p!==p2){ err('Password tidak sama'); return; }
+  if(k.length < SEC.MIN_KEY){ err('Admin Key minimal '+SEC.MIN_KEY+' karakter'); return; }
+  // Save admin account
+  const salt = randSalt();
+  const hash = await hashPass(salt, p);
+  const keyHash = await hashAdminKey(k);
+  await saveUsers([{ username:u, role:'admin' }]);
+  await secSet('users:pw:'+u, JSON.stringify({ salt, hash }));
+  await secSet('auth:adminkeyhash', keyHash);
+  await secDel('auth:needsKeySetup');
+  sessionStart(u, 'admin');
+  authReveal();
+  toast('✓ Akun admin dibuat — simpan Admin Key Anda dengan aman');
+  renderAdminAuditLog('setup', u, 'Admin account created');
 };
-$('#liBtn').onclick=async()=>{
-  const u=$('#liUser').value.trim(), p=$('#liPass').value;
-  if(await authVerify(u,p)){ $('#liPass').value=''; authReveal(); toast('✓ Berhasil masuk'); }
-  else{ $('#liErr').textContent='Username atau password salah.'; }
+
+// ── Login ─────────────────────────────────────────────────────
+$('#liBtn').onclick = async () => {
+  const bf = bfCheck();
+  if(bf.locked){
+    $('#liErr').textContent='⛔ Akun terkunci '+bf.secsLeft+'s akibat terlalu banyak percobaan gagal.';
+    return;
+  }
+  const u = $('#liUser').value.trim();
+  const p = $('#liPass').value;
+  if(!u||!p){ $('#liErr').textContent='Username dan password wajib diisi'; return; }
+
+  const users = await getUsers();
+  const userRec = users.find(x => x.username.toLowerCase()===u.toLowerCase());
+  if(!userRec){ bfFail(); $('#liErr').textContent='Username atau password salah'; return; }
+
+  const pwData = await secGet('users:pw:'+userRec.username);
+  if(!pwData){ bfFail(); $('#liErr').textContent='Data akun rusak — hubungi admin'; return; }
+  const {salt, hash} = JSON.parse(pwData);
+  const computed = await hashPass(salt, p);
+  if(computed !== hash){ 
+    const att = bfFail();
+    const rem = SEC.MAX_ATTEMPTS - att;
+    $('#liErr').textContent = rem>0
+      ? 'Username atau password salah. Sisa percobaan: '+rem
+      : '⛔ Akun terkunci 15 menit karena terlalu banyak percobaan.';
+    return;
+  }
+  $('#liPass').value='';
+  sessionStart(userRec.username, userRec.role);
+  authReveal();
+  renderAdminAuditLog('login', userRec.username, 'Login berhasil');
+  toast('✓ Selamat datang, '+userRec.username);
 };
-$('#liReset').onclick=async()=>{
-  if(!confirm('Reset kredensial? Anda akan diminta membuat username/password baru. Data link tidak terhapus.')) return;
-  try{ await store.del('auth:user'); await store.del('auth:salt'); await store.del('auth:hash'); }catch(_){}
-  AUTH.user=''; AUTH.salt=''; AUTH.hash=''; showAuth();
-};
-$('#suPass2').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#suBtn').click(); });
 $('#liPass').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#liBtn').click(); });
-$('#logoutBtn').onclick=()=>{ AUTH.ok=false; showAuth(); };
+$('#liUser').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#liPass').focus(); });
+
+// ── Register (requires Admin Key) ────────────────────────────
+$('#regBtn').onclick = async () => {
+  const u = $('#regUser').value.trim();
+  const p = $('#regPass').value;
+  const p2= $('#regPass2').value;
+  const k = $('#regAdminKey').value.trim();
+  const err = (m) => { $('#regErr').textContent=m; };
+  if(u.length < 3){ err('Username minimal 3 karakter'); return; }
+  if(/[^a-zA-Z0-9_-]/.test(u)){ err('Username: hanya huruf, angka, _, -'); return; }
+  if(p.length < SEC.MIN_PASS){ err('Password minimal '+SEC.MIN_PASS+' karakter'); return; }
+  if(p!==p2){ err('Password tidak sama'); return; }
+  if(!k){ err('Admin Key wajib diisi'); return; }
+  // Verify admin key
+  const storedKeyHash = await getAdminKeyHash();
+  if(!storedKeyHash){ err('Admin Key belum diatur oleh administrator'); return; }
+  const inputKeyHash = await hashAdminKey(k);
+  if(inputKeyHash !== storedKeyHash){ err('Admin Key salah — hubungi administrator'); return; }
+  // Check duplicate
+  if(await userExists(u)){ err('Username sudah digunakan'); return; }
+  // Save
+  const salt = randSalt();
+  const hash = await hashPass(salt, p);
+  const users = await getUsers();
+  users.push({ username:u, role:'user' });
+  await saveUsers(users);
+  await secSet('users:pw:'+u, JSON.stringify({ salt, hash }));
+  $('#regPass').value=''; $('#regPass2').value=''; $('#regAdminKey').value='';
+  renderAdminAuditLog('register', u, 'Akun baru didaftarkan');
+  await showAuth('login');
+  toast('✓ Akun berhasil dibuat — silakan login');
+};
+$('#regPass2').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#regBtn').click(); });
+
+// ── Reset password (requires Admin Key) ──────────────────────
+$('#rstBtn').onclick = async () => {
+  const k  = $('#rstAdminKey').value.trim();
+  const u  = $('#rstUser').value.trim();
+  const p  = $('#rstPass').value;
+  const err= (m)=>{ $('#rstErr').textContent=m; };
+  if(!k){ err('Admin Key wajib'); return; }
+  if(!u){ err('Username wajib'); return; }
+  if(p.length < SEC.MIN_PASS){ err('Password baru minimal '+SEC.MIN_PASS+' karakter'); return; }
+  const storedKeyHash = await getAdminKeyHash();
+  if(!storedKeyHash){ err('Admin Key belum diatur'); return; }
+  if(await hashAdminKey(k) !== storedKeyHash){ err('Admin Key salah'); return; }
+  if(!(await userExists(u))){ err('Username tidak ditemukan'); return; }
+  const salt = randSalt();
+  const hash = await hashPass(salt, p);
+  await secSet('users:pw:'+u, JSON.stringify({ salt, hash }));
+  $('#rstPass').value=''; $('#rstAdminKey').value='';
+  renderAdminAuditLog('reset', u, 'Password direset via Admin Key');
+  await showAuth('login');
+  toast('✓ Password berhasil direset');
+};
+
+// ── Nav between screens ───────────────────────────────────────
+$('#showRegister').onclick    = ()=> showAuth('register');
+$('#showLogin').onclick       = ()=> showAuth('login');
+$('#showLoginFromReset').onclick = ()=> showAuth('login');
+$('#liReset').onclick         = ()=> showAuth('reset');
+
+// ── Logout ────────────────────────────────────────────────────
+$('#logoutBtn').onclick = () => {
+  renderAdminAuditLog('logout', AUTH.currentUser?.username||'?', 'Logout');
+  sessionEnd();
+  showAuth('login');
+};
+
+// ── Audit log ─────────────────────────────────────────────────
+// Stored in sessionStorage only (not persisted) — shows in Admin Panel
+let AUDIT_LOG = [];
+function renderAdminAuditLog(action, user, note){
+  AUDIT_LOG.unshift({ ts: Date.now(), action, user, note });
+  if(AUDIT_LOG.length > 50) AUDIT_LOG = AUDIT_LOG.slice(0,50);
+  // Refresh admin panel if open
+  const panel = document.getElementById('adminAuditBody');
+  if(panel) renderAdminPanel();
+}
+
+
 
 
 // ══ TAB NAVIGATION ══════════════════════════════════════════
@@ -2282,7 +2693,13 @@ document.querySelectorAll('.app-tab').forEach(tab => {
 
 // ---------- init ----------
 (async function(){
-  await authLoad(); showAuth();          // tampilkan kunci lebih dulu (dashboard tersembunyi di belakang)
+  await authLoad();
+  // Try to restore session from sessionStorage first (page refresh)
+  if(!sessionRestore()){
+    await showAuth('login');
+  } else {
+    document.getElementById('authOverlay').classList.remove('show');
+  }          // tampilkan kunci lebih dulu (dashboard tersembunyi di belakang)
   await loadData();
   await loadSettings();
   markDuplicates(); refreshFilterOptions(); renderKPI(); applyFilters(); renderLog();
@@ -2987,7 +3404,7 @@ function saveFolder() {
     d.folders.push({ id:hddUid(), name, desc, files:tmpFiles });
     toast('✓ Folder ditambahkan');
   }
-  save(); render();
+  hddSave(); render();
   document.getElementById('folderOverlay').classList.remove('show');
 }
 
@@ -2998,14 +3415,14 @@ function deleteDisk(id) {
   disks = disks.filter(d=>d.id!==id);
   tpFolders = tpFolders.filter(f=>f.diskId!==id);
   if (tpTargetDiskId===id) tpTargetDiskId=null;
-  save(); render(); toast('✓ Hardisk dihapus');
+  hddSave(); render(); toast('✓ Hardisk dihapus');
 }
 
 function deleteFolder(diskId, folderId) {
   const d = disks.find(x=>x.id===diskId);
   d.folders = d.folders.filter(f=>f.id!==folderId);
   tpFolders = tpFolders.filter(f=>f.folderId!==folderId);
-  save(); render(); toast('✓ Folder dihapus');
+  hddSave(); render(); toast('✓ Folder dihapus');
 }
 
 function hddAskDelete(msg, cb) {
@@ -3021,7 +3438,7 @@ document.getElementById('unitGroup').addEventListener('click', e => {
   const b = e.target.closest('.utab'); if (!b) return;
   unit = b.dataset.u;
   document.querySelectorAll('.utab').forEach(x => x.classList.toggle('sel', x===b));
-  save(); render();
+  hddSave(); render();
 });
 
 document.getElementById('addDiskBtn').onclick = () => openDiskModal(null);
@@ -3064,6 +3481,179 @@ document.addEventListener('keydown', e => {
 // Toast
 
 
+
+
+// ══════════════════════════════════════════════════════════════
+// ADMIN PANEL JS
+// ══════════════════════════════════════════════════════════════
+async function openAdminPanel(){
+  if(!AUTH.ok || AUTH.currentUser?.role !== 'admin'){
+    toast('⚠ Hanya administrator yang dapat mengakses panel ini');
+    return;
+  }
+  document.getElementById('adminCurrentUser').textContent =
+    'Masuk sebagai: ' + AUTH.currentUser.username + ' (admin)';
+  document.getElementById('adminKeySection').style.display = '';
+  await renderAdminUserList();
+  renderAdminPanel();
+  document.getElementById('adminOverlay').classList.add('show');
+}
+
+async function renderAdminUserList(){
+  const users = await getUsers();
+  const me = AUTH.currentUser?.username;
+  const container = document.getElementById('adminUserList');
+  if(!users.length){ container.innerHTML = '<div style="color:var(--muted-2);font-family:Share Tech Mono,monospace;font-size:10px;padding:6px">Tidak ada user terdaftar.</div>'; return; }
+  container.innerHTML = users.map(u => `
+    <div class="user-row">
+      <div class="ur-name">${u.username}${u.username===me?' <span style="color:var(--muted-2);font-size:9px">(saya)</span>':''}</div>
+      <span class="ur-role ${u.role}">${u.role}</span>
+      ${u.username!==me ? `
+        ${u.role!=='admin'?`<button class="ur-promote" data-u="${u.username}" data-r="${u.role}">Jadikan Admin</button>`:`<button class="ur-promote" data-u="${u.username}" data-r="${u.role}">Turunkan ke User</button>`}
+        <button class="ur-del" data-u="${u.username}">Hapus</button>
+      ` : ''}
+    </div>`).join('');
+
+  container.querySelectorAll('.ur-del').forEach(b => {
+    b.onclick = async () => {
+      if(!confirm('Hapus akun ' + b.dataset.u + '?')) return;
+      let list = await getUsers();
+      list = list.filter(x => x.username !== b.dataset.u);
+      await saveUsers(list);
+      await secDel('users:pw:' + b.dataset.u);
+      renderAdminAuditLog('delete-user', b.dataset.u, 'Akun dihapus oleh admin');
+      await renderAdminUserList();
+      toast('✓ Akun ' + b.dataset.u + ' dihapus');
+    };
+  });
+  container.querySelectorAll('.ur-promote').forEach(b => {
+    b.onclick = async () => {
+      const list = await getUsers();
+      const u = list.find(x => x.username === b.dataset.u);
+      if(!u) return;
+      u.role = u.role === 'admin' ? 'user' : 'admin';
+      await saveUsers(list);
+      renderAdminAuditLog('role-change', b.dataset.u, 'Role diubah ke ' + u.role);
+      await renderAdminUserList();
+      toast('✓ Role ' + b.dataset.u + ' diubah ke ' + u.role);
+    };
+  });
+}
+
+function renderAdminPanel(){
+  const body = document.getElementById('adminAuditBody');
+  if(!body) return;
+  if(!AUDIT_LOG.length){
+    body.innerHTML = '<div style="color:var(--muted-2)">Belum ada aktivitas di sesi ini.</div>';
+    return;
+  }
+  body.innerHTML = AUDIT_LOG.map(l => {
+    const d = new Date(l.ts).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const col = l.action==='login'||l.action==='setup'?'var(--green)':l.action==='logout'?'var(--muted)':'var(--amber)';
+    return `<div style="display:grid;grid-template-columns:70px 80px 100px 1fr;gap:6px;border-bottom:1px solid var(--line-soft);padding:2px 0">
+      <span style="color:var(--muted-2)">${d}</span>
+      <span style="color:${col};text-transform:uppercase;font-size:9px">${l.action}</span>
+      <span style="color:var(--cyan)">${l.user}</span>
+      <span>${l.note}</span>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('adminChangePassBtn').onclick = async () => {
+  const old = document.getElementById('adminOldPass').value;
+  const nw  = document.getElementById('adminNewPass').value;
+  const err = (m)=>{ document.getElementById('adminPassErr').textContent=m; };
+  if(!old||!nw){ err('Isi kedua field'); return; }
+  if(nw.length < SEC.MIN_PASS){ err('Password baru minimal '+SEC.MIN_PASS+' karakter'); return; }
+  const me = AUTH.currentUser?.username;
+  const pwData = await secGet('users:pw:'+me);
+  if(!pwData){ err('Data akun tidak ditemukan'); return; }
+  const {salt, hash} = JSON.parse(pwData);
+  if(await hashPass(salt, old) !== hash){ err('Password lama salah'); return; }
+  const newSalt = randSalt();
+  const newHash = await hashPass(newSalt, nw);
+  await secSet('users:pw:'+me, JSON.stringify({ salt:newSalt, hash:newHash }));
+  document.getElementById('adminOldPass').value='';
+  document.getElementById('adminNewPass').value='';
+  document.getElementById('adminPassErr').textContent='';
+  renderAdminAuditLog('change-pass', me, 'Password diubah');
+  toast('✓ Password berhasil diubah');
+};
+
+document.getElementById('adminChangeKeyBtn').onclick = async () => {
+  const k = document.getElementById('adminNewKey').value.trim();
+  const err = (m)=>{ document.getElementById('adminKeyErr').textContent=m; };
+  if(k.length < SEC.MIN_KEY){ err('Admin Key minimal '+SEC.MIN_KEY+' karakter'); return; }
+  const newKeyHash = await hashAdminKey(k);
+  await secSet('auth:adminkeyhash', newKeyHash);
+  await secDel('auth:needsKeySetup');
+  document.getElementById('adminNewKey').value='';
+  document.getElementById('adminKeyErr').textContent='';
+  renderAdminAuditLog('change-adminkey', AUTH.currentUser?.username||'?', 'Admin Key diperbarui');
+  toast('✓ Admin Key berhasil diperbarui — simpan dengan aman!');
+};
+
+document.getElementById('closeAdminPanel').onclick =
+document.getElementById('cancelAdminPanel').onclick = () =>
+  document.getElementById('adminOverlay').classList.remove('show');
+document.getElementById('adminOverlay').onclick = e => {
+  if(e.target===document.getElementById('adminOverlay'))
+    document.getElementById('adminOverlay').classList.remove('show');
+};
+
 </script>
+
+<!-- ADMIN PANEL MODAL -->
+<div class="overlay" id="adminOverlay">
+  <div class="modal" style="width:min(680px,100%)">
+    <div class="modal-head">
+      <div>
+        <h2>Admin Panel</h2>
+        <p id="adminCurrentUser">Anda masuk sebagai: —</p>
+      </div>
+      <button class="x" id="closeAdminPanel">&times;</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- USERS -->
+      <div class="field-lab" style="color:var(--cyan)">Manajemen User</div>
+      <div id="adminUserList" style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px"></div>
+
+      <!-- CHANGE OWN PASSWORD -->
+      <div class="field-lab" style="color:var(--cyan);margin-top:14px">Ubah Password Saya</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;margin-bottom:14px">
+        <div class="fg" style="margin:0"><label>Password Lama</label><input id="adminOldPass" type="password" placeholder="Password saat ini"></div>
+        <div class="fg" style="margin:0"><label>Password Baru <span style="color:var(--muted-2)">(min 8)</span></label><input id="adminNewPass" type="password" placeholder="Password baru"></div>
+        <button class="btn primary" id="adminChangePassBtn" style="padding:8px 13px;font-size:10px">Ubah</button>
+      </div>
+      <div class="auth-err" id="adminPassErr" style="margin-bottom:8px"></div>
+
+      <!-- CHANGE ADMIN KEY (admin only) -->
+      <div id="adminKeySection">
+        <div class="field-lab" style="color:var(--cyan);margin-top:6px">Admin Key <span style="font-size:9px;color:var(--muted-2);font-family:'Share Tech Mono',monospace;text-transform:none;letter-spacing:.04em;font-weight:400">— dibutuhkan untuk registrasi &amp; reset password</span></div>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-bottom:6px">
+          <div class="fg" style="margin:0">
+            <label>Admin Key Baru <span style="color:var(--muted-2)">(min 12 karakter)</span></label>
+            <input id="adminNewKey" type="text" autocomplete="off" placeholder="Masukkan Admin Key baru">
+          </div>
+          <button class="btn primary" id="adminChangeKeyBtn" style="padding:8px 13px;font-size:10px">Simpan Key</button>
+        </div>
+        <div class="auth-err" id="adminKeyErr" style="margin-bottom:8px"></div>
+        <div class="note-box" style="margin-top:0;margin-bottom:14px">Admin Key tersimpan sebagai hash — tidak ada yang bisa membacanya. Jika hilang, tidak bisa dipulihkan. Tulis di tempat aman.</div>
+      </div>
+
+      <!-- AUDIT LOG -->
+      <div class="field-lab" style="color:var(--cyan);margin-top:6px">Log Aktivitas Sesi Ini</div>
+      <div id="adminAuditBody" style="background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;max-height:180px;overflow-y:auto;padding:8px 10px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);line-height:1.7;letter-spacing:.04em">
+        <div style="color:var(--muted-2)">Belum ada aktivitas di sesi ini.</div>
+      </div>
+
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" id="cancelAdminPanel">Tutup</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
