@@ -268,28 +268,65 @@ textarea:focus{border-color:var(--cyan-dim);box-shadow:0 0 10px rgba(0,245,255,.
 .hdd-wrap{background:var(--panel);border:1px solid var(--line-soft);border-radius:2px;overflow:hidden;margin-bottom:4px}
 .hdd-toolbar{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line-soft);background:linear-gradient(180deg,rgba(0,30,60,.9),rgba(0,20,40,.95));flex-wrap:wrap;gap:8px}
 .hdd-toolbar-left{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
-.hdd-calc-panel{background:rgba(0,245,255,.025);border-bottom:1px solid var(--line-soft);padding:12px 16px;display:none}
+/* calculator panel */
+.hdd-calc-panel{background:rgba(0,245,255,.018);border-bottom:1px solid var(--line-soft);padding:14px 16px;display:none}
 .hdd-calc-panel.open{display:block}
+.hdd-calc-tabs{display:flex;gap:0;margin-bottom:14px;border:1px solid var(--line-soft);border-radius:2px;overflow:hidden}
+.hdd-calc-tab{flex:1;padding:7px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;border:none;background:var(--bg-2);color:var(--muted);transition:.15s;text-align:center}
+.hdd-calc-tab.active{background:rgba(0,245,255,.12);color:var(--cyan);text-shadow:0 0 6px rgba(0,245,255,.4)}
+.hdd-calc-body{display:none}.hdd-calc-body.active{display:block}
 .hdd-calc-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.hdd-calc-row label{font-size:10px;color:var(--cyan);font-family:'Share Tech Mono',monospace;letter-spacing:.1em;text-transform:uppercase}
-.hdd-calc-row input{background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;color:var(--text);padding:7px 9px;font-family:'Share Tech Mono',monospace;font-size:12px;width:120px;outline:none;transition:.18s}
-.hdd-calc-row input:focus{border-color:var(--cyan-dim)}
-.hdd-calc-row select{background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;color:var(--muted);padding:6px 8px;font-family:'Share Tech Mono',monospace;font-size:11px;outline:none}
-.hdd-calc-results{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
-.hdd-calc-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:2px;font-family:'Share Tech Mono',monospace;font-size:11px;border:1px solid}
-.hdd-calc-chip.ok{background:var(--green-bg);border-color:rgba(57,255,20,.3);color:var(--green)}
-.hdd-calc-chip.no{background:var(--red-bg);border-color:rgba(255,34,68,.3);color:var(--red)}
-.hdd-calc-chip.warn{background:var(--amber-bg);border-color:rgba(255,204,0,.3);color:var(--amber)}
-table.hdd-table{width:100%;border-collapse:collapse;min-width:720px}
-table.hdd-table thead th{background:linear-gradient(180deg,rgba(0,30,60,.9),rgba(0,20,40,.95));color:var(--cyan);font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;text-align:left;padding:10px 12px;white-space:nowrap;font-family:'Share Tech Mono',monospace;border-bottom:1px solid var(--cyan-deep);text-shadow:0 0 8px rgba(0,245,255,.4)}
-table.hdd-table tbody td{padding:9px 12px;border-bottom:1px solid var(--line-soft);font-size:12px;vertical-align:middle}
-table.hdd-table tbody tr:hover{background:rgba(0,245,255,.03)}
-table.hdd-table tbody tr:last-child td{border-bottom:none}
-.hdd-progwrap{width:120px;height:8px;background:var(--bg-2);border:1px solid var(--line-soft);border-radius:1px;overflow:hidden}
+.hdd-calc-row label{font-size:10px;color:var(--cyan);font-family:'Share Tech Mono',monospace;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.hdd-calc-inp{background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;color:var(--text);padding:7px 9px;font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;transition:.18s}
+.hdd-calc-inp:focus{border-color:var(--cyan-dim)}
+.hdd-calc-inp.w100{width:100px}
+.hdd-calc-inp.w160{width:160px}
+.hdd-calc-sel{background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;color:var(--muted);padding:7px 9px;font-family:'Share Tech Mono',monospace;font-size:11px;outline:none;transition:.18s}
+.hdd-calc-sel:focus{border-color:var(--cyan-dim);color:var(--text)}
+.calc-result-box{background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;padding:12px 14px;margin-top:10px;display:none}
+.calc-result-box.show{display:block}
+.calc-result-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--line-soft);flex-wrap:wrap}
+.calc-result-row:last-child{border-bottom:none}
+.calc-hdd-name{font-family:'Orbitron',monospace;font-size:11px;font-weight:600;color:var(--text);min-width:130px}
+.calc-arrow{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted-2)}
+.calc-before{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted)}
+.calc-after{font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:600}
+.calc-badge{padding:2px 8px;border-radius:1px;font-size:10px;font-weight:600;font-family:'Share Tech Mono',monospace;letter-spacing:.06em;border:1px solid;white-space:nowrap}
+.calc-badge.ok{background:var(--green-bg);border-color:rgba(57,255,20,.3);color:var(--green)}
+.calc-badge.no{background:var(--red-bg);border-color:rgba(255,34,68,.3);color:var(--red)}
+.calc-badge.same{background:var(--cyan-bg);border-color:var(--cyan-deep);color:var(--cyan-dim)}
+/* HDD accordion */
+.hdd-card{border-bottom:1px solid var(--line-soft)}
+.hdd-card:last-child{border-bottom:none}
+.hdd-card-head{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;user-select:none;transition:.15s;flex-wrap:wrap}
+.hdd-card-head:hover{background:rgba(0,245,255,.03)}
+.hdd-expand-icon{color:var(--muted-2);font-size:12px;font-family:'Share Tech Mono',monospace;transition:.15s;flex:none;width:16px}
+.hdd-card.open .hdd-expand-icon{color:var(--cyan);transform:rotate(90deg)}
+.hdd-card-name{font-family:'Orbitron',monospace;font-weight:600;font-size:12px;color:var(--text);letter-spacing:.04em;min-width:120px}
+.hdd-card-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:1}
+.hdd-progwrap{width:100px;height:7px;background:var(--bg-2);border:1px solid var(--line-soft);border-radius:1px;overflow:hidden;flex:none}
 .hdd-progbar{height:100%;border-radius:1px;transition:width .5s cubic-bezier(.4,0,.2,1)}
-.hdd-used-inp{width:90px;background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;color:var(--text);padding:4px 7px;font-family:'Share Tech Mono',monospace;font-size:11px;outline:none;transition:.18s}
-.hdd-used-inp:focus{border-color:var(--cyan-dim);box-shadow:0 0 5px rgba(0,245,255,.15)}
+.hdd-card-body{display:none;border-top:1px solid var(--line-soft);background:rgba(0,0,0,.15)}
+.hdd-card.open .hdd-card-body{display:block}
+.hdd-file-toolbar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:rgba(0,245,255,.02);border-bottom:1px solid var(--line-soft)}
+table.hdd-file-table{width:100%;border-collapse:collapse;min-width:480px}
+table.hdd-file-table thead th{background:rgba(0,20,40,.8);color:var(--cyan-dim);font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:8px 12px;font-family:'Share Tech Mono',monospace;border-bottom:1px solid var(--line-soft);text-align:left}
+table.hdd-file-table tbody td{padding:7px 12px;border-bottom:1px solid var(--line-soft);font-size:12px;vertical-align:middle}
+table.hdd-file-table tbody tr:hover{background:rgba(0,245,255,.03)}
+table.hdd-file-table tbody tr:last-child td{border-bottom:none}
+table.hdd-file-table tfoot td{padding:7px 12px;font-family:'Share Tech Mono',monospace;font-size:11px;border-top:1px solid var(--cyan-deep);background:rgba(0,20,40,.5)}
+.hdd-file-name-inp{background:transparent;border:1px solid transparent;border-radius:2px;color:var(--text);padding:3px 6px;font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;transition:.18s;width:100%;min-width:120px}
+.hdd-file-name-inp:focus{border-color:var(--cyan-dim);background:var(--bg-2)}
+.hdd-file-size-inp{background:transparent;border:1px solid transparent;border-radius:2px;color:var(--amber);padding:3px 6px;font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;transition:.18s;width:72px;text-align:right}
+.hdd-file-size-inp:focus{border-color:var(--cyan-dim);background:var(--bg-2)}
 .hdd-empty{padding:40px 20px;text-align:center;color:var(--muted);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.04em}
+/* move/merge calc checkbox list */
+.hdd-file-checklist{max-height:180px;overflow-y:auto;border:1px solid var(--line-soft);border-radius:2px;background:var(--bg-2);padding:6px 0;margin-top:6px}
+.hdd-file-chk-row{display:flex;align-items:center;gap:8px;padding:4px 10px;font-family:'Share Tech Mono',monospace;font-size:11px;cursor:pointer;transition:.12s}
+.hdd-file-chk-row:hover{background:rgba(0,245,255,.05)}
+.hdd-file-chk-row input{flex:none}
+.hdd-file-chk-label{flex:1;color:var(--text)}
+.hdd-file-chk-size{color:var(--muted);white-space:nowrap}
 
 /* corner decorations on modal */
 .modal::before,.modal::after{content:'';position:absolute;width:12px;height:12px;border-color:var(--cyan);border-style:solid;pointer-events:none}
@@ -408,7 +445,7 @@ table.hdd-table tbody tr:last-child td{border-bottom:none}
     <div class="pager" id="pager"></div>
   </div>
 
-  <div class="section-title">HDD &amp; Storage Management <span class="tag">— kalkulator &amp; kelola disk</span></div>
+  <div class="section-title">HDD &amp; Storage Management <span class="tag">— isi disk, pindah file, kalkulator</span></div>
 
   <div class="hdd-kpis" id="hddKpis"></div>
 
@@ -419,46 +456,69 @@ table.hdd-table tbody tr:last-child td{border-bottom:none}
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Tambah HDD
         </button>
         <button class="btn ghost" id="hddCalcToggle" style="padding:7px 12px;font-size:11px">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>Kalkulator Ruang
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>Kalkulator &amp; Pindah
         </button>
       </div>
       <span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted-2)" id="hddSaveStatus"></span>
     </div>
 
+    <!-- Calculator Panel -->
     <div class="hdd-calc-panel" id="hddCalcPanel">
-      <div style="font-family:'Orbitron',monospace;font-size:11px;color:var(--cyan);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">Kalkulator Kebutuhan Ruang</div>
-      <div class="hdd-calc-row">
-        <label>Ukuran File</label>
-        <input type="number" id="calcSize" min="0" step="0.1" placeholder="0">
-        <select id="calcUnit">
-          <option value="gb">GB</option>
-          <option value="tb">TB</option>
-          <option value="mb">MB</option>
-        </select>
-        <button class="btn primary" id="calcRunBtn" style="padding:7px 12px;font-size:11px">Cari HDD Cocok</button>
-        <button class="btn ghost" id="calcClearBtn" style="padding:7px 10px;font-size:11px">Reset</button>
+      <div class="hdd-calc-tabs">
+        <button class="hdd-calc-tab active" data-tab="move">Pindah File antar HDD</button>
+        <button class="hdd-calc-tab" data-tab="merge">Merge / Gabung HDD</button>
+        <button class="hdd-calc-tab" data-tab="space">Cari HDD Cukup</button>
       </div>
-      <div class="hdd-calc-results" id="calcResults"></div>
+
+      <!-- Tab: Pindah File -->
+      <div class="hdd-calc-body active" id="calcTabMove">
+        <div class="hdd-calc-row">
+          <label>Dari HDD</label>
+          <select class="hdd-calc-sel w160" id="calcMoveFrom" style="min-width:160px"></select>
+          <label>Ke HDD</label>
+          <select class="hdd-calc-sel w160" id="calcMoveTo" style="min-width:160px"></select>
+          <button class="btn primary" id="calcMoveRunBtn" style="padding:7px 12px;font-size:11px">Hitung Pindahan</button>
+          <button class="btn ghost" id="calcMoveClearBtn" style="padding:7px 10px;font-size:11px">Reset</button>
+        </div>
+        <div id="calcMoveFiles" style="display:none">
+          <div style="font-size:10px;color:var(--cyan);font-family:'Share Tech Mono',monospace;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">Pilih file yang akan dipindah:</div>
+          <div class="hdd-file-checklist" id="calcMoveFileList"></div>
+          <div style="font-size:10px;color:var(--muted);font-family:'Share Tech Mono',monospace;margin-top:5px">Total dipilih: <b id="calcMoveSizeTotal" style="color:var(--amber)">0 GB</b></div>
+        </div>
+        <div class="calc-result-box" id="calcMoveResult"></div>
+      </div>
+
+      <!-- Tab: Merge -->
+      <div class="hdd-calc-body" id="calcTabMerge">
+        <div class="hdd-calc-row">
+          <label>Pindahkan SEMUA isi dari</label>
+          <select class="hdd-calc-sel w160" id="calcMergeFrom" style="min-width:160px"></select>
+          <label>ke</label>
+          <select class="hdd-calc-sel w160" id="calcMergeTo" style="min-width:160px"></select>
+          <button class="btn primary" id="calcMergeRunBtn" style="padding:7px 12px;font-size:11px">Hitung Merge</button>
+        </div>
+        <div class="calc-result-box" id="calcMergeResult"></div>
+      </div>
+
+      <!-- Tab: Cari HDD Cukup -->
+      <div class="hdd-calc-body" id="calcTabSpace">
+        <div class="hdd-calc-row">
+          <label>Ukuran file</label>
+          <input type="number" class="hdd-calc-inp w100" id="calcSize" min="0" step="0.01" placeholder="0">
+          <select class="hdd-calc-sel" id="calcUnit">
+            <option value="gb">GB</option>
+            <option value="tb">TB</option>
+            <option value="mb">MB</option>
+          </select>
+          <button class="btn primary" id="calcSpaceRunBtn" style="padding:7px 12px;font-size:11px">Cari HDD Cocok</button>
+          <button class="btn ghost" id="calcSpaceClearBtn" style="padding:7px 10px;font-size:11px">Reset</button>
+        </div>
+        <div class="calc-result-box" id="calcSpaceResult"></div>
+      </div>
     </div>
 
-    <div style="overflow-x:auto">
-      <table class="hdd-table">
-        <thead><tr>
-          <th style="width:40px">No</th>
-          <th>Nama / Label</th>
-          <th>Tipe</th>
-          <th>Kapasitas</th>
-          <th>Terpakai (GB)</th>
-          <th>Tersisa</th>
-          <th>%</th>
-          <th>Penggunaan</th>
-          <th>Status</th>
-          <th>Lokasi</th>
-          <th>Aksi</th>
-        </tr></thead>
-        <tbody id="hddTbody"></tbody>
-      </table>
-    </div>
+    <!-- HDD Accordion List -->
+    <div id="hddList"><div class="hdd-empty">Belum ada data disk. Klik <b>Tambah HDD</b> untuk memulai.</div></div>
   </div>
 
   <div class="section-title">Riwayat Pembaruan <span class="tag">— log import sesi ini & tersimpan</span></div>
@@ -673,6 +733,40 @@ table.hdd-table tbody tr:last-child td{border-bottom:none}
         <div style="display:flex;gap:8px;margin-left:auto">
           <button class="btn ghost" id="cancelHDD">Batal</button>
           <button class="btn primary" id="saveHDDBtn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Simpan
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HDD File add/edit modal -->
+<div class="overlay" id="hddFileOverlay">
+  <div class="modal" style="width:min(440px,100%)">
+    <div class="modal-head">
+      <div><h2 id="hddFileModalTitle">Tambah File</h2><p id="hddFileModalSub">Tambahkan item ke HDD.</p></div>
+      <button class="x" id="closeHDDFile">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="fg full"><label>Nama File / Folder</label><input id="hddFileName" type="text" placeholder="Nama file, folder, atau koleksi"></div>
+        <div class="fg"><label>Ukuran</label><input id="hddFileSize" type="number" min="0" step="0.01" placeholder="0"></div>
+        <div class="fg"><label>Satuan</label>
+          <select id="hddFileSizeUnit">
+            <option value="gb">GB</option>
+            <option value="tb">TB</option>
+            <option value="mb">MB</option>
+          </select>
+        </div>
+        <div class="fg full"><label>Catatan</label><input id="hddFileNote" type="text" placeholder="opsional"></div>
+      </div>
+      <div id="hddFileErr" style="color:var(--red);font-size:11px;font-family:'Share Tech Mono',monospace;min-height:16px;margin-top:8px"></div>
+      <div class="modal-foot" style="justify-content:space-between;margin-top:14px">
+        <button class="btn" id="deleteHDDFileBtn" style="border-color:var(--red);color:var(--red);display:none">Hapus</button>
+        <div style="display:flex;gap:8px;margin-left:auto">
+          <button class="btn ghost" id="cancelHDDFile">Batal</button>
+          <button class="btn primary" id="saveHDDFileBtn">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Simpan
           </button>
         </div>
@@ -967,15 +1061,50 @@ function gdUpdateStatus(){
 }
 function gsExtractId(s){ s=String(s||'').trim(); const m=s.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/); if(m) return m[1]; if(/^[a-zA-Z0-9_-]{20,}$/.test(s)) return s; return ''; }
 function gsExtractGid(s){ const m=String(s||'').match(/[#&?]gid=(\d+)/); return m?m[1]:''; }
-// JSONP ke endpoint gviz (script tag) -> tidak kena CORS. Sheet harus publik (anyone with link).
+
+// ---------- CSV parser (untuk sheet publik tanpa login, semua baris, plain-text URL) ----------
+function parseCSVLine(line){
+  const cells=[]; let cur='',inQ=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='"'){ if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ; }
+    else if(ch===','&&!inQ){ cells.push(cur); cur=''; }
+    else cur+=ch;
+  }
+  cells.push(cur);
+  return cells.map(c=>c.trim());
+}
+function parseCSVText(text){
+  const lines=text.split(/\r?\n/);
+  const mat=[]; let prev='';
+  for(const line of lines){
+    const full=prev?prev+'\n'+line:line;
+    // hitung quote ganjil = baris berlanjut
+    const qCount=(full.match(/"/g)||[]).length;
+    if(qCount%2!==0){ prev=full; continue; }
+    if(full.trim()) mat.push(parseCSVLine(full));
+    prev='';
+  }
+  return mat;
+}
+// Ambil CSV dari Google Sheets publik — mengembalikan semua baris, termasuk plain-text URL
+async function csvFetch(id,gid){
+  const url='https://docs.google.com/spreadsheets/d/'+id+'/export?format=csv'+(gid?'&gid='+gid:'');
+  const r=await fetch(url,{mode:'cors',credentials:'omit'});
+  if(!r.ok) throw new Error('CSV fetch gagal ('+r.status+') — pastikan sheet dibagikan publik');
+  const text=await r.text();
+  if(!text.trim()) throw new Error('CSV kosong — cek akses sheet');
+  return parseCSVText(text);
+}
+// Fallback gviz (JSONP) — untuk sheet yang hanya "link viewer" tapi belum dipublikasikan
 function gvizFetch(id,gid){
   return new Promise((resolve,reject)=>{
     const cb='__gviz_'+Date.now()+Math.floor(Math.random()*1e4);
     const s=document.createElement('script'); let done=false;
-    const to=setTimeout(()=>{ if(!done){ cleanup(); reject(new Error('Timeout — pastikan sheet dibagikan publik')); } },15000);
+    const to=setTimeout(()=>{ if(!done){ cleanup(); reject(new Error('Timeout gviz')); } },12000);
     function cleanup(){ try{ delete window[cb]; }catch(_){ window[cb]=undefined; } if(s.parentNode) s.parentNode.removeChild(s); clearTimeout(to); }
     window[cb]=(resp)=>{ done=true; cleanup(); resolve(resp); };
-    s.onerror=()=>{ if(!done){ cleanup(); reject(new Error('Gagal memuat — sheet tidak publik atau link salah')); } };
+    s.onerror=()=>{ if(!done){ cleanup(); reject(new Error('gviz script error')); } };
     s.src='https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?headers=1&tqx=responseHandler:'+cb+(gid?('&gid='+gid):'');
     document.head.appendChild(s);
   });
@@ -986,12 +1115,20 @@ function gvizToMatrix(resp){
   const rows=(t.rows||[]).map(r=>(r.c||[]).map(cell=>cell?(cell.f!=null?cell.f:(cell.v!=null?cell.v:'')):''));
   return header.some(h=>h) ? [header,...rows] : rows;
 }
+// Ambil matrix dari sheet publik: coba CSV dulu, lalu gviz
+async function fetchPublicMatrix(id,gid){
+  try{ return await csvFetch(id,gid); }
+  catch(e1){
+    try{ return gvizToMatrix(await gvizFetch(id,gid)); }
+    catch(e2){ throw new Error('CSV: '+e1.message+' | gviz: '+e2.message); }
+  }
+}
 async function gsImportPublic(){
   const url=$('#pubUrl').value;
   const id=gsExtractId(url); if(!id) throw new Error('Link/ID Google Sheets tidak valid');
-  const resp=await gvizFetch(id, gsExtractGid(url));
-  const rows=rowsFromMatrix(gvizToMatrix(resp));
-  if(!rows.length) throw new Error('Tidak ada baris terbaca — cek header & akses publik');
+  const matrix=await fetchPublicMatrix(id,gsExtractGid(url));
+  const rows=rowsFromMatrix(matrix);
+  if(!rows.length) throw new Error('Tidak ada baris terbaca — cek nama kolom header (Link, Status, Region, dst.) & akses publik');
   importRows(rows, $('#pubMode').value||'merge');
   return rows.length;
 }
@@ -1058,14 +1195,12 @@ async function asTick(manual){
   try{
     let rows, via;
     if(gdValid()){
-      // sudah login → Sheets API: sheet boleh PRIVAT & link =HYPERLINK("url",..) terbaca
       const tab=await gsFirstTab(id);
-      const r=await gdFetch('https://sheets.googleapis.com/v4/spreadsheets/'+id+'/values/'+encodeURIComponent(tab)+'?majorDimension=ROWS&valueRenderOption=FORMULA&dateTimeRenderOption=FORMATTED_STRING');
-      const j=await r.json(); rows=rowsFromMatrix(j.values||[]); via='API (login)';
+      const r=await gdFetch('https://sheets.googleapis.com/v4/spreadsheets/'+id+'/values/'+encodeURIComponent(tab)+'?majorDimension=ROWS&valueRenderOption=FORMATTED_VALUE&dateTimeRenderOption=FORMATTED_STRING');
+      const j=await r.json(); rows=rowsFromMatrix(j.values||[]); via='API login';
     }else{
-      // publik tanpa login (gviz) → link embedded TIDAK membawa URL-nya
-      const resp=await gvizFetch(id, gsExtractGid(AS.url));
-      rows=rowsFromMatrix(gvizToMatrix(resp)); via='link publik';
+      const matrix=await fetchPublicMatrix(id,gsExtractGid(AS.url));
+      rows=rowsFromMatrix(matrix); via='CSV publik';
     }
     AS.lastAt=Date.now();
     if(!rows.length){ asStatus('Terhubung ('+via+'), tapi belum ada baris terbaca. Cek header (kolom Link) & akses. · '+asClock(),'on'); return; }
@@ -1527,6 +1662,9 @@ function exportXlsx(){
 }
 
 // ---------- HDD Storage Management ----------
+// HDD_DATA[i] = { _id, name, type, totalGB, status, location, note, updatedAt, files:[] }
+// files[j]    = { _id, name, sizeGB, note }
+// usedGB adalah SUM(files[].sizeGB) — dihitung otomatis
 let HDD_DATA=[];
 let hddEditId=null;
 const HDD_STATUS={
@@ -1535,21 +1673,25 @@ const HDD_STATUS={
   critical:{label:'Critical',color:'red'},
   offline:{label:'Offline',color:'gray'}
 };
-// konversi ke GB
 function toGB(val,unit){ val=parseFloat(val)||0; if(unit==='tb') return val*1024; if(unit==='mb') return val/1024; return val; }
 function fmtGB(gb){
   if(gb===0) return '0 GB';
   if(gb>=1024) return (gb/1024).toFixed(2)+' TB';
-  if(gb<1) return (gb*1024).toFixed(0)+' MB';
+  if(gb<1&&gb>0) return (gb*1024).toFixed(0)+' MB';
   return gb.toFixed(2)+' GB';
 }
+// total pemakaian dari file-list HDD
+function hddUsedGB(h){ return (h.files||[]).reduce((s,f)=>s+(f.sizeGB||0),0); }
 
 async function loadHDD(){
   try{
     const d=await store.get('hdd:data');
-    if(d && d.value){
-      const parsed=JSON.parse(d.value);
-      if(Array.isArray(parsed)) HDD_DATA=parsed;
+    if(d&&d.value){
+      const p=JSON.parse(d.value);
+      if(Array.isArray(p)){
+        // migrasi: pastikan setiap HDD punya files array
+        HDD_DATA=p.map(h=>({...h,files:Array.isArray(h.files)?h.files:[]}));
+      }
     }
   }catch(e){ console.warn('loadHDD',e); }
 }
@@ -1557,8 +1699,8 @@ async function saveHDD(){
   const ss=$('#hddSaveStatus');
   try{
     if(ss) ss.textContent='Menyimpan…';
-    await store.set('hdd:data', JSON.stringify(HDD_DATA));
-    if(ss){ ss.textContent='✓ Tersimpan'; setTimeout(()=>{ if(ss) ss.textContent=''; },2000); }
+    await store.set('hdd:data',JSON.stringify(HDD_DATA));
+    if(ss){ ss.textContent='✓ Tersimpan'; setTimeout(()=>{ if(ss) ss.textContent=''; },2200); }
   }catch(e){
     if(ss) ss.textContent='⚠ Gagal simpan';
     toast('⚠ Gagal simpan HDD: '+e.message);
@@ -1570,75 +1712,160 @@ function renderHDDKPIs(){
   if(!HDD_DATA.length){ el.innerHTML=''; return; }
   const n=HDD_DATA.length;
   const capTotal=HDD_DATA.reduce((a,h)=>a+(h.totalGB||0),0);
-  const usedTotal=HDD_DATA.reduce((a,h)=>a+(h.usedGB||0),0);
+  const usedTotal=HDD_DATA.reduce((a,h)=>a+hddUsedGB(h),0);
   const freeTotal=capTotal-usedTotal;
-  const pctUsed=capTotal>0?(usedTotal/capTotal*100):0;
-  const pctColor=pctUsed>90?'--red':pctUsed>75?'--amber':'--green';
+  const pct=capTotal>0?(usedTotal/capTotal*100):0;
+  const pc=pct>90?'--red':pct>75?'--amber':'--green';
   el.innerHTML=`
-    <div class="kpi"><span class="bar" style="background:var(--cyan);box-shadow:0 0 6px var(--cyan)"></span><div class="lab">Total Disk</div><div class="num" style="color:var(--cyan)">${n}</div><div class="pct"><b>${HDD_DATA.filter(h=>h.status==='healthy').length} healthy</b></div></div>
-    <div class="kpi"><span class="bar" style="background:var(--purple);box-shadow:0 0 6px var(--purple)"></span><div class="lab">Total Kapasitas</div><div class="num" style="color:var(--purple);font-size:18px">${fmtGB(capTotal)}</div><div class="pct"><b>${n} disk</b></div></div>
-    <div class="kpi"><span class="bar" style="background:var(${pctColor});box-shadow:0 0 6px var(${pctColor})"></span><div class="lab">Terpakai</div><div class="num" style="color:var(${pctColor});font-size:18px">${fmtGB(usedTotal)}</div><div class="pct"><b>${pctUsed.toFixed(1)}%</b></div></div>
-    <div class="kpi"><span class="bar" style="background:var(--green);box-shadow:0 0 6px var(--green)"></span><div class="lab">Tersisa</div><div class="num" style="color:var(--green);font-size:18px">${fmtGB(freeTotal)}</div><div class="pct"><b>${(100-pctUsed).toFixed(1)}% bebas</b></div></div>`;
+    <div class="kpi"><span class="bar" style="background:var(--cyan);box-shadow:0 0 6px var(--cyan)"></span>
+      <div class="lab">Total Disk</div><div class="num" style="color:var(--cyan)">${n}</div>
+      <div class="pct"><b>${HDD_DATA.filter(h=>h.status==='healthy').length} healthy</b></div></div>
+    <div class="kpi"><span class="bar" style="background:var(--purple);box-shadow:0 0 6px var(--purple)"></span>
+      <div class="lab">Total Kapasitas</div><div class="num" style="color:var(--purple);font-size:18px">${fmtGB(capTotal)}</div>
+      <div class="pct"><b>${n} disk</b></div></div>
+    <div class="kpi"><span class="bar" style="background:var(${pc});box-shadow:0 0 6px var(${pc})"></span>
+      <div class="lab">Terpakai</div><div class="num" style="color:var(${pc});font-size:18px">${fmtGB(usedTotal)}</div>
+      <div class="pct"><b>${pct.toFixed(1)}%</b></div></div>
+    <div class="kpi"><span class="bar" style="background:var(--green);box-shadow:0 0 6px var(--green)"></span>
+      <div class="lab">Tersisa</div><div class="num" style="color:var(--green);font-size:18px">${fmtGB(Math.max(0,freeTotal))}</div>
+      <div class="pct"><b>${(100-pct).toFixed(1)}% bebas</b></div></div>`;
 }
+
+const hddOpenSet=new Set(); // track expanded HDDs
 
 function renderHDD(){
   renderHDDKPIs();
-  const tb=$('#hddTbody'); if(!tb) return;
+  populateCalcSelects();
+  const el=$('#hddList'); if(!el) return;
   if(!HDD_DATA.length){
-    tb.innerHTML=`<tr><td colspan="11"><div class="hdd-empty">Belum ada data disk. Klik <b>Tambah HDD</b> untuk memulai.</div></td></tr>`;
+    el.innerHTML='<div class="hdd-empty">Belum ada data disk. Klik <b>Tambah HDD</b> untuk memulai.</div>';
     return;
   }
-  tb.innerHTML=HDD_DATA.map((h,i)=>{
-    const total=h.totalGB||0; const used=h.usedGB||0;
-    const free=total-used;
-    const pct=total>0?(used/total*100):0;
+  el.innerHTML=HDD_DATA.map(h=>{
+    const used=hddUsedGB(h); const total=h.totalGB||0;
+    const free=Math.max(0,total-used);
+    const pct=total>0?Math.min(100,used/total*100):0;
     const barColor=pct>90?'var(--red)':pct>75?'var(--amber)':'var(--green)';
     const st=HDD_STATUS[h.status]||HDD_STATUS.healthy;
     const cv=COLOR[st.color]; const cbg=COLORBG[st.color];
-    const pctStyle=pct>90?'color:var(--red)':pct>75?'color:var(--amber)':'color:var(--green)';
-    return `<tr>
-      <td class="mono" style="color:var(--muted-2)">${i+1}</td>
-      <td style="font-family:'Orbitron',monospace;font-size:11px;font-weight:600;color:var(--text)">${esc(h.name||'—')}</td>
-      <td><span class="pill" style="background:rgba(0,245,255,.06);color:var(--cyan-dim);border:1px solid var(--cyan-deep)">${esc(h.type||'HDD')}</span></td>
-      <td class="mono">${fmtGB(total)}</td>
-      <td><input class="hdd-used-inp" data-hid="${h._id}" value="${(used>=1024?(used/1024).toFixed(2):used.toFixed(2))}" title="Edit langsung — tekan Enter untuk simpan"><span class="mono" style="font-size:10px;color:var(--muted-2);margin-left:4px">${used>=1024?'TB':'GB'}</span></td>
-      <td class="mono" style="color:var(--green)">${fmtGB(free)}</td>
-      <td class="mono" style="${pctStyle}">${pct.toFixed(1)}%</td>
-      <td><div class="hdd-progwrap"><div class="hdd-progbar" style="width:${Math.min(pct,100).toFixed(1)}%;background:${barColor}"></div></div></td>
-      <td><span class="pill" style="background:var(${cbg});color:var(${cv})"><span class="dot" style="background:var(${cv})"></span>${st.label}</span></td>
-      <td class="mono" style="font-size:11px;color:var(--muted)">${esc(h.location||'—')}</td>
-      <td>
-        <button class="iconbtn edit" data-hid="${h._id}" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
-        <button class="iconbtn del" data-hid="${h._id}" title="Hapus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+    const isOpen=hddOpenSet.has(h._id);
+    const nFiles=(h.files||[]).length;
+    // file rows
+    const fileRows=(h.files||[]).map((f,fi)=>`<tr>
+      <td class="mono" style="color:var(--muted-2);width:32px">${fi+1}</td>
+      <td><input class="hdd-file-name-inp" data-hid="${h._id}" data-fid="${f._id}" value="${esc(f.name||'')}" placeholder="Nama file/folder"></td>
+      <td style="white-space:nowrap">
+        <input class="hdd-file-size-inp" data-hid="${h._id}" data-fid="${f._id}" data-field="size" value="${f.sizeGB>=1024?(f.sizeGB/1024).toFixed(2):f.sizeGB.toFixed(2)}" title="Ukuran">
+        <span class="mono" style="font-size:10px;color:var(--muted-2)">${f.sizeGB>=1024?'TB':'GB'}</span>
+        <span class="mono" style="font-size:10px;color:var(--muted-2);margin-left:4px">(${fmtGB(f.sizeGB)})</span>
       </td>
-    </tr>`;
+      <td class="mono" style="font-size:11px;color:var(--muted)">${esc(f.note||'—')}</td>
+      <td style="white-space:nowrap">
+        <button class="iconbtn edit" data-hid="${h._id}" data-fid="${f._id}" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        <button class="iconbtn del" data-hid="${h._id}" data-fid="${f._id}" title="Hapus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </td></tr>`).join('');
+    const totalFilesSize=used;
+    return `<div class="hdd-card${isOpen?' open':''}" data-hid="${h._id}">
+      <div class="hdd-card-head" data-toggle="${h._id}">
+        <span class="hdd-expand-icon">▶</span>
+        <span class="hdd-card-name">${esc(h.name)}</span>
+        <div class="hdd-card-meta">
+          <span class="pill" style="background:rgba(0,245,255,.06);color:var(--cyan-dim);border:1px solid var(--cyan-deep);font-size:9px">${esc(h.type||'HDD')}</span>
+          <span class="mono" style="font-size:11px;color:var(--muted)">${fmtGB(total)}</span>
+          <span class="mono" style="font-size:11px;color:var(--amber)">${fmtGB(used)} used</span>
+          <span class="mono" style="font-size:11px;color:var(--green)">${fmtGB(free)} free</span>
+          <div class="hdd-progwrap"><div class="hdd-progbar" style="width:${pct.toFixed(1)}%;background:${barColor}"></div></div>
+          <span class="mono" style="font-size:11px;color:${barColor}">${pct.toFixed(1)}%</span>
+          <span class="pill" style="background:var(${cbg});color:var(${cv});font-size:9px"><span class="dot" style="background:var(${cv})"></span>${st.label}</span>
+          ${h.location?`<span class="mono" style="font-size:10px;color:var(--muted-2)">${esc(h.location)}</span>`:''}
+          <span class="mono" style="font-size:10px;color:var(--muted-2)">${nFiles} file</span>
+        </div>
+        <button class="iconbtn edit" data-hid="${h._id}" title="Edit HDD" style="margin-left:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        <button class="iconbtn del" data-hid="${h._id}" title="Hapus HDD"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </div>
+      <div class="hdd-card-body">
+        <div class="hdd-file-toolbar">
+          <span class="mono" style="font-size:11px;color:var(--muted)">${nFiles} item · total ${fmtGB(totalFilesSize)}</span>
+          <button class="btn primary" data-addf="${h._id}" style="padding:5px 11px;font-size:11px">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Tambah File
+          </button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="hdd-file-table">
+            <thead><tr><th style="width:32px">No</th><th>Nama File / Folder</th><th>Ukuran</th><th>Catatan</th><th style="width:70px">Aksi</th></tr></thead>
+            <tbody>${fileRows||`<tr><td colspan="5" style="text-align:center;padding:16px;color:var(--muted);font-family:'Share Tech Mono',monospace;font-size:11px">Belum ada file — klik Tambah File</td></tr>`}</tbody>
+            ${nFiles?`<tfoot><tr>
+              <td colspan="2" style="color:var(--cyan);font-family:'Share Tech Mono',monospace;font-weight:600">TOTAL</td>
+              <td style="color:var(--amber);font-family:'Share Tech Mono',monospace;font-weight:600">${fmtGB(totalFilesSize)}</td>
+              <td colspan="2" style="color:var(--green);font-family:'Share Tech Mono',monospace">sisa ${fmtGB(free)} dari ${fmtGB(total)}</td>
+            </tr></tfoot>`:''}
+          </table>
+        </div>
+      </div>
+    </div>`;
   }).join('');
-  tb.querySelectorAll('.iconbtn.edit[data-hid]').forEach(b=>b.onclick=()=>openHDDEdit(b.dataset.hid));
-  tb.querySelectorAll('.iconbtn.del[data-hid]').forEach(b=>b.onclick=()=>confirmDeleteHDD(b.dataset.hid));
-  // inline edit "terpakai"
-  tb.querySelectorAll('.hdd-used-inp').forEach(inp=>{
-    inp.onkeydown=async e=>{
-      if(e.key==='Enter'){ inp.blur(); }
+
+  // bind expand toggle
+  el.querySelectorAll('[data-toggle]').forEach(btn=>{
+    btn.onclick=e=>{
+      if(e.target.closest('.iconbtn')) return; // jangan toggle kalau klik edit/del
+      const id=btn.dataset.toggle;
+      const card=el.querySelector('.hdd-card[data-hid="'+id+'"]');
+      if(!card) return;
+      const open=card.classList.toggle('open');
+      if(open) hddOpenSet.add(id); else hddOpenSet.delete(id);
     };
+  });
+  // HDD edit/del
+  el.querySelectorAll('.hdd-card-head .iconbtn.edit[data-hid]').forEach(b=>{
+    b.onclick=e=>{ e.stopPropagation(); openHDDEdit(b.dataset.hid); };
+  });
+  el.querySelectorAll('.hdd-card-head .iconbtn.del[data-hid]').forEach(b=>{
+    b.onclick=e=>{ e.stopPropagation(); confirmDeleteHDD(b.dataset.hid); };
+  });
+  // Add file buttons
+  el.querySelectorAll('[data-addf]').forEach(b=>{
+    b.onclick=()=>openHDDFileAdd(b.dataset.addf);
+  });
+  // File edit/del
+  el.querySelectorAll('.hdd-card-body .iconbtn.edit[data-fid]').forEach(b=>{
+    b.onclick=()=>openHDDFileEdit(b.dataset.hid,b.dataset.fid);
+  });
+  el.querySelectorAll('.hdd-card-body .iconbtn.del[data-fid]').forEach(b=>{
+    b.onclick=()=>confirmDeleteHDDFile(b.dataset.hid,b.dataset.fid);
+  });
+  // inline edit file name
+  el.querySelectorAll('.hdd-file-name-inp').forEach(inp=>{
     inp.onblur=async()=>{
       const h=HDD_DATA.find(x=>x._id===inp.dataset.hid); if(!h) return;
-      const raw=parseFloat(inp.value)||0;
-      // deteksi unit: jika nilai < 50 dan total >= 1024, anggap TB
-      const newGB = (raw<50 && h.totalGB>=1024) ? raw*1024 : raw;
-      if(Math.abs(newGB - h.usedGB)<0.001) return;
-      h.usedGB=newGB; h.updatedAt=Date.now();
+      const f=(h.files||[]).find(x=>x._id===inp.dataset.fid); if(!f) return;
+      if(inp.value.trim()===f.name) return;
+      f.name=inp.value.trim(); f.updatedAt=Date.now();
       await saveHDD(); renderHDD();
-      toast('✓ Terpakai diperbarui');
     };
+    inp.onkeydown=e=>{ if(e.key==='Enter') inp.blur(); };
+  });
+  // inline edit file size
+  el.querySelectorAll('.hdd-file-size-inp').forEach(inp=>{
+    inp.onblur=async()=>{
+      const h=HDD_DATA.find(x=>x._id===inp.dataset.hid); if(!h) return;
+      const f=(h.files||[]).find(x=>x._id===inp.dataset.fid); if(!f) return;
+      const raw=parseFloat(inp.value)||0;
+      const newGB=(raw<50&&f.sizeGB>=1024)?raw*1024:raw;
+      if(Math.abs(newGB-f.sizeGB)<0.001) return;
+      f.sizeGB=newGB; f.updatedAt=Date.now();
+      await saveHDD(); renderHDD();
+    };
+    inp.onkeydown=e=>{ if(e.key==='Enter') inp.blur(); };
   });
 }
 
+// ---- HDD CRUD ----
 function openHDDAdd(){
   hddEditId=null;
   $('#hddModalTitle').textContent='Tambah HDD';
   $('#hddName').value=''; $('#hddType').value='HDD';
   $('#hddTotal').value=''; $('#hddTotalUnit').value='tb';
-  $('#hddUsed').value=''; $('#hddUsedUnit').value='tb';
   $('#hddStatus').value='healthy';
   $('#hddLocation').value=''; $('#hddNote').value='';
   $('#hddModalErr').textContent='';
@@ -1650,14 +1877,10 @@ function openHDDEdit(id){
   const h=HDD_DATA.find(x=>x._id===id); if(!h) return;
   hddEditId=id;
   $('#hddModalTitle').textContent='Edit HDD';
-  $('#hddName').value=h.name||'';
-  $('#hddType').value=h.type||'HDD';
+  $('#hddName').value=h.name||''; $('#hddType').value=h.type||'HDD';
   const tUnit=h.totalGB>=1024?'tb':'gb';
-  const uUnit=h.usedGB>=1024?'tb':'gb';
   $('#hddTotal').value=tUnit==='tb'?(h.totalGB/1024).toFixed(2):h.totalGB.toFixed(2);
   $('#hddTotalUnit').value=tUnit;
-  $('#hddUsed').value=uUnit==='tb'?(h.usedGB/1024).toFixed(2):h.usedGB.toFixed(2);
-  $('#hddUsedUnit').value=uUnit;
   $('#hddStatus').value=h.status||'healthy';
   $('#hddLocation').value=h.location||''; $('#hddNote').value=h.note||'';
   $('#hddModalErr').textContent='';
@@ -1669,57 +1892,221 @@ async function saveHDDEntry(){
   const name=$('#hddName').value.trim();
   const errEl=$('#hddModalErr');
   if(!name){ errEl.textContent='⚠ Nama wajib diisi.'; return; }
-  const totalGB=toGB($('#hddTotal').value, $('#hddTotalUnit').value);
-  const usedGB=toGB($('#hddUsed').value, $('#hddUsedUnit').value);
-  if(totalGB>0 && usedGB>totalGB){ errEl.textContent='⚠ Terpakai tidak boleh melebihi kapasitas.'; return; }
+  const totalGB=toGB($('#hddTotal').value,$('#hddTotalUnit').value);
   errEl.textContent='';
-  const entry={
-    name, type:$('#hddType').value,
-    totalGB, usedGB,
-    status:$('#hddStatus').value,
-    location:$('#hddLocation').value.trim(),
-    note:$('#hddNote').value.trim(),
-    updatedAt:Date.now()
-  };
   if(hddEditId){
     const idx=HDD_DATA.findIndex(x=>x._id===hddEditId);
-    if(idx>=0) HDD_DATA[idx]={...HDD_DATA[idx],...entry};
+    if(idx>=0) HDD_DATA[idx]={...HDD_DATA[idx],name,type:$('#hddType').value,totalGB,
+      status:$('#hddStatus').value,location:$('#hddLocation').value.trim(),
+      note:$('#hddNote').value.trim(),updatedAt:Date.now()};
   }else{
-    entry._id='h'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-    HDD_DATA.push(entry);
+    HDD_DATA.push({_id:'h'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+      name,type:$('#hddType').value,totalGB,status:$('#hddStatus').value,
+      location:$('#hddLocation').value.trim(),note:$('#hddNote').value.trim(),
+      files:[],updatedAt:Date.now()});
   }
-  await saveHDD();
-  renderHDD();
+  await saveHDD(); renderHDD();
   $('#hddOverlay').classList.remove('show');
   toast('✓ HDD '+(hddEditId?'diperbarui':'ditambahkan'));
 }
 function confirmDeleteHDD(id){
   const h=HDD_DATA.find(x=>x._id===id); if(!h) return;
-  if(!confirm('Hapus "'+h.name+'"?\nData ini akan dihapus permanen.')) return;
+  if(!confirm('Hapus "'+h.name+'" beserta '+((h.files||[]).length)+' file di dalamnya?')) return;
   deleteHDD(id);
 }
 async function deleteHDD(id){
   HDD_DATA=HDD_DATA.filter(x=>x._id!==id);
+  hddOpenSet.delete(id);
   await saveHDD(); renderHDD();
   $('#hddOverlay').classList.remove('show');
   toast('✓ HDD dihapus');
 }
-function runHDDCalc(){
-  const sizeGB=toGB($('#calcSize').value, $('#calcUnit').value);
-  const el=$('#calcResults');
-  if(!sizeGB||sizeGB<=0){ el.innerHTML='<span style="color:var(--muted);font-family:\'Share Tech Mono\',monospace;font-size:11px">Masukkan ukuran file yang valid.</span>'; return; }
-  if(!HDD_DATA.length){ el.innerHTML='<span style="color:var(--muted);font-family:\'Share Tech Mono\',monospace;font-size:11px">Belum ada data HDD.</span>'; return; }
-  const results=HDD_DATA.map(h=>{
-    const free=h.totalGB-(h.usedGB||0);
-    const ok=h.status!=='offline' && free>=sizeGB;
-    const tight=h.status!=='offline' && !ok && free>0 && free<sizeGB;
-    return {h,free,ok,tight};
+
+// ---- FILE CRUD ----
+let hddFileEditHid=null, hddFileEditFid=null;
+function openHDDFileAdd(hid){
+  const h=HDD_DATA.find(x=>x._id===hid); if(!h) return;
+  hddFileEditHid=hid; hddFileEditFid=null;
+  $('#hddFileModalTitle').textContent='Tambah File';
+  $('#hddFileModalSub').textContent='Tambahkan item ke '+h.name;
+  $('#hddFileName').value=''; $('#hddFileSize').value='';
+  $('#hddFileSizeUnit').value='gb'; $('#hddFileNote').value='';
+  $('#hddFileErr').textContent='';
+  $('#deleteHDDFileBtn').style.display='none';
+  $('#hddFileOverlay').classList.add('show');
+  setTimeout(()=>$('#hddFileName').focus(),50);
+}
+function openHDDFileEdit(hid,fid){
+  const h=HDD_DATA.find(x=>x._id===hid); if(!h) return;
+  const f=(h.files||[]).find(x=>x._id===fid); if(!f) return;
+  hddFileEditHid=hid; hddFileEditFid=fid;
+  $('#hddFileModalTitle').textContent='Edit File';
+  $('#hddFileModalSub').textContent=h.name;
+  $('#hddFileName').value=f.name||'';
+  const sUnit=f.sizeGB>=1024?'tb':'gb';
+  $('#hddFileSize').value=sUnit==='tb'?(f.sizeGB/1024).toFixed(2):f.sizeGB.toFixed(2);
+  $('#hddFileSizeUnit').value=sUnit;
+  $('#hddFileNote').value=f.note||'';
+  $('#hddFileErr').textContent='';
+  $('#deleteHDDFileBtn').style.display='';
+  $('#hddFileOverlay').classList.add('show');
+  setTimeout(()=>$('#hddFileName').focus(),50);
+}
+async function saveHDDFileEntry(){
+  const name=$('#hddFileName').value.trim();
+  const errEl=$('#hddFileErr');
+  if(!name){ errEl.textContent='⚠ Nama file wajib diisi.'; return; }
+  const sizeGB=toGB($('#hddFileSize').value,$('#hddFileSizeUnit').value);
+  if(sizeGB<=0){ errEl.textContent='⚠ Ukuran harus lebih dari 0.'; return; }
+  errEl.textContent='';
+  const h=HDD_DATA.find(x=>x._id===hddFileEditHid); if(!h) return;
+  if(!h.files) h.files=[];
+  if(hddFileEditFid){
+    const f=h.files.find(x=>x._id===hddFileEditFid); if(!f) return;
+    f.name=name; f.sizeGB=sizeGB; f.note=$('#hddFileNote').value.trim(); f.updatedAt=Date.now();
+  }else{
+    h.files.push({_id:'f'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+      name,sizeGB,note:$('#hddFileNote').value.trim(),updatedAt:Date.now()});
+  }
+  h.updatedAt=Date.now();
+  hddOpenSet.add(hddFileEditHid); // tetap terbuka
+  await saveHDD(); renderHDD();
+  $('#hddFileOverlay').classList.remove('show');
+  toast('✓ File '+(hddFileEditFid?'diperbarui':'ditambahkan')+' ke '+h.name);
+}
+function confirmDeleteHDDFile(hid,fid){
+  const h=HDD_DATA.find(x=>x._id===hid); if(!h) return;
+  const f=(h.files||[]).find(x=>x._id===fid); if(!f) return;
+  if(!confirm('Hapus "'+f.name+'" ('+fmtGB(f.sizeGB)+') dari '+h.name+'?')) return;
+  deleteHDDFile(hid,fid);
+}
+async function deleteHDDFile(hid,fid){
+  const h=HDD_DATA.find(x=>x._id===hid); if(!h) return;
+  h.files=(h.files||[]).filter(x=>x._id!==fid);
+  hddOpenSet.add(hid);
+  await saveHDD(); renderHDD();
+  toast('✓ File dihapus');
+}
+
+// ---- CALCULATOR ----
+function populateCalcSelects(){
+  const opts=HDD_DATA.map(h=>`<option value="${h._id}">${esc(h.name)} (${fmtGB(hddUsedGB(h))} / ${fmtGB(h.totalGB||0)})</option>`).join('');
+  ['#calcMoveFrom','#calcMoveTo','#calcMergeFrom','#calcMergeTo'].forEach(sel=>{
+    const el=$(sel); if(!el) return; const cur=el.value;
+    el.innerHTML='<option value="">— Pilih HDD —</option>'+opts;
+    if(cur && [...el.options].some(o=>o.value===cur)) el.value=cur;
+  });
+}
+$('#calcMoveFrom').onchange=function(){
+  const hid=this.value; const box=$('#calcMoveFiles');
+  if(!hid){ box.style.display='none'; return; }
+  const h=HDD_DATA.find(x=>x._id===hid);
+  if(!h||!h.files||!h.files.length){ box.style.display='none'; toast('HDD ini belum punya file'); return; }
+  $('#calcMoveFileList').innerHTML=h.files.map(f=>`
+    <label class="hdd-file-chk-row">
+      <input type="checkbox" class="cb calcMoveCb" data-fid="${f._id}" data-size="${f.sizeGB}">
+      <span class="hdd-file-chk-label">${esc(f.name)}</span>
+      <span class="hdd-file-chk-size">${fmtGB(f.sizeGB)}</span>
+    </label>`).join('');
+  box.style.display='block';
+  document.querySelectorAll('.calcMoveCb').forEach(cb=>cb.onchange=updateCalcMoveTotal);
+  updateCalcMoveTotal();
+};
+function updateCalcMoveTotal(){
+  const total=[...document.querySelectorAll('.calcMoveCb:checked')].reduce((s,cb)=>s+(parseFloat(cb.dataset.size)||0),0);
+  const el=$('#calcMoveSizeTotal'); if(el) el.textContent=fmtGB(total);
+}
+function runCalcMove(){
+  const fromId=$('#calcMoveFrom').value; const toId=$('#calcMoveTo').value;
+  const res=$('#calcMoveResult');
+  if(!fromId||!toId){ res.innerHTML='<span style="color:var(--muted);font-family:\'Share Tech Mono\',monospace;font-size:11px">Pilih HDD asal dan tujuan.</span>'; res.classList.add('show'); return; }
+  if(fromId===toId){ res.innerHTML='<span style="color:var(--amber);font-family:\'Share Tech Mono\',monospace;font-size:11px">HDD asal dan tujuan sama.</span>'; res.classList.add('show'); return; }
+  const selectedFids=new Set([...document.querySelectorAll('.calcMoveCb:checked')].map(cb=>cb.dataset.fid));
+  const moveGB=[...document.querySelectorAll('.calcMoveCb:checked')].reduce((s,cb)=>s+(parseFloat(cb.dataset.size)||0),0);
+  if(!moveGB){ res.innerHTML='<span style="color:var(--muted);font-family:\'Share Tech Mono\',monospace;font-size:11px">Pilih file yang akan dipindah.</span>'; res.classList.add('show'); return; }
+  const hFrom=HDD_DATA.find(x=>x._id===fromId);
+  const hTo=HDD_DATA.find(x=>x._id===toId);
+  const usedFrom=hddUsedGB(hFrom); const totalFrom=hFrom.totalGB||0;
+  const usedTo=hddUsedGB(hTo); const totalTo=hTo.totalGB||0;
+  const newUsedFrom=usedFrom-moveGB; const newUsedTo=usedTo+moveGB;
+  const freeTo=totalTo-usedTo;
+  const fits=newUsedTo<=totalTo;
+  const shortfall=fits?0:newUsedTo-totalTo;
+  res.classList.add('show');
+  res.innerHTML=`
+    <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--cyan);margin-bottom:8px">
+      Memindahkan <b style="color:var(--amber)">${fmtGB(moveGB)}</b> dari ${esc(hFrom.name)} → ${esc(hTo.name)}
+    </div>
+    <div class="calc-result-row">
+      <div class="calc-hdd-name">${esc(hFrom.name)}</div>
+      <div class="calc-before">${fmtGB(usedFrom)} used</div>
+      <div class="calc-arrow">→</div>
+      <div class="calc-after" style="color:var(--green)">${fmtGB(Math.max(0,newUsedFrom))} used</div>
+      <div class="calc-arrow">·</div>
+      <div class="calc-before" style="color:var(--green)">+${fmtGB(moveGB)} bebas</div>
+      <span class="calc-badge ok">✓ OK</span>
+    </div>
+    <div class="calc-result-row">
+      <div class="calc-hdd-name">${esc(hTo.name)}</div>
+      <div class="calc-before">${fmtGB(usedTo)} used · ${fmtGB(freeTo)} free</div>
+      <div class="calc-arrow">→</div>
+      <div class="calc-after" style="color:${fits?'var(--amber)':'var(--red)'}">${fmtGB(newUsedTo)} used</div>
+      ${fits
+        ?`<div class="calc-before" style="color:var(--green)">sisa ${fmtGB(totalTo-newUsedTo)}</div><span class="calc-badge ok">✓ Cukup</span>`
+        :`<span class="calc-badge no">✗ Kurang ${fmtGB(shortfall)}</span>`}
+    </div>`;
+}
+function runCalcMerge(){
+  const fromId=$('#calcMergeFrom').value; const toId=$('#calcMergeTo').value;
+  const res=$('#calcMergeResult');
+  if(!fromId||!toId){ res.innerHTML='<span style="color:var(--muted);font-family:\'Share Tech Mono\',monospace;font-size:11px">Pilih HDD asal dan tujuan.</span>'; res.classList.add('show'); return; }
+  if(fromId===toId){ res.innerHTML='<span style="color:var(--amber);font-family:\'Share Tech Mono\',monospace;font-size:11px">HDD asal dan tujuan sama.</span>'; res.classList.add('show'); return; }
+  const hFrom=HDD_DATA.find(x=>x._id===fromId);
+  const hTo=HDD_DATA.find(x=>x._id===toId);
+  const moveGB=hddUsedGB(hFrom); const usedTo=hddUsedGB(hTo); const totalTo=hTo.totalGB||0;
+  const newUsedTo=usedTo+moveGB; const fits=newUsedTo<=totalTo;
+  const shortfall=fits?0:newUsedTo-totalTo;
+  const fileList=(hFrom.files||[]).map(f=>`<div style="display:flex;justify-content:space-between;padding:3px 0;font-family:'Share Tech Mono',monospace;font-size:11px;border-bottom:1px solid var(--line-soft)"><span style="color:var(--text)">${esc(f.name)}</span><span style="color:var(--amber)">${fmtGB(f.sizeGB)}</span></div>`).join('');
+  res.classList.add('show');
+  res.innerHTML=`
+    <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--cyan);margin-bottom:8px">
+      Gabung SEMUA isi <b>${esc(hFrom.name)}</b> (${fmtGB(moveGB)}) → <b>${esc(hTo.name)}</b>
+    </div>
+    ${fileList?`<div style="max-height:120px;overflow-y:auto;background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;padding:6px 10px;margin-bottom:8px">${fileList}</div>`:'<div style="font-family:\'Share Tech Mono\',monospace;font-size:11px;color:var(--muted);margin-bottom:8px">HDD asal tidak punya file terdaftar.</div>'}
+    <div class="calc-result-row">
+      <div class="calc-hdd-name">${esc(hFrom.name)}</div>
+      <div class="calc-before">${fmtGB(moveGB)} used</div>
+      <div class="calc-arrow">→</div>
+      <div class="calc-after" style="color:var(--green)">0 GB (kosong)</div>
+      <span class="calc-badge ok">✓ Bebas</span>
+    </div>
+    <div class="calc-result-row">
+      <div class="calc-hdd-name">${esc(hTo.name)}</div>
+      <div class="calc-before">${fmtGB(usedTo)} used · ${fmtGB(Math.max(0,totalTo-usedTo))} free</div>
+      <div class="calc-arrow">→</div>
+      <div class="calc-after" style="color:${fits?'var(--amber)':'var(--red)'}">${fmtGB(newUsedTo)} used</div>
+      ${fits
+        ?`<div class="calc-before" style="color:var(--green)">sisa ${fmtGB(totalTo-newUsedTo)}</div><span class="calc-badge ok">✓ Cukup</span>`
+        :`<span class="calc-badge no">✗ Kurang ${fmtGB(shortfall)}</span>`}
+    </div>`;
+}
+function runCalcSpace(){
+  const sizeGB=toGB($('#calcSize').value,$('#calcUnit').value);
+  const res=$('#calcSpaceResult');
+  if(!sizeGB||sizeGB<=0){ res.innerHTML='<span style="color:var(--muted);font-family:\'Share Tech Mono\',monospace;font-size:11px">Masukkan ukuran file yang valid.</span>'; res.classList.add('show'); return; }
+  if(!HDD_DATA.length){ res.innerHTML='<span style="color:var(--muted);font-family:\'Share Tech Mono\',monospace;font-size:11px">Belum ada data HDD.</span>'; res.classList.add('show'); return; }
+  const rows=HDD_DATA.map(h=>{
+    const used=hddUsedGB(h); const free=Math.max(0,(h.totalGB||0)-used);
+    const ok=h.status!=='offline'&&free>=sizeGB;
+    return {h,free,ok};
   }).sort((a,b)=>b.free-a.free);
-  el.innerHTML=results.map(r=>{
-    const cls=r.h.status==='offline'?'no':r.ok?'ok':'no';
-    const icon=r.ok?'✓':r.h.status==='offline'?'✗':'✗';
-    return `<div class="hdd-calc-chip ${cls}">${icon} <b>${esc(r.h.name)}</b> — ${fmtGB(r.free)} tersisa</div>`;
-  }).join('');
+  res.classList.add('show');
+  res.innerHTML=`<div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--cyan);margin-bottom:8px">Cari HDD dengan ruang ≥ <b style="color:var(--amber)">${fmtGB(sizeGB)}</b></div>`
+    +rows.map(r=>`<div class="calc-result-row">
+      <div class="calc-hdd-name">${esc(r.h.name)}</div>
+      <div class="calc-before">${fmtGB(r.free)} tersisa</div>
+      <span class="calc-badge ${r.h.status==='offline'?'no':r.ok?'ok':'no'}">${r.h.status==='offline'?'✗ Offline':r.ok?'✓ Cukup':'✗ Kurang '+fmtGB(sizeGB-r.free)}</span>
+    </div>`).join('');
 }
 
 // ---------- events ----------
@@ -1805,14 +2192,34 @@ $('#autoSyncToggle').onchange=async e=>{
 
 // HDD wiring
 $('#addHDDBtn').onclick=openHDDAdd;
-$('#hddCalcToggle').onclick=()=>{ const p=$('#hddCalcPanel'); p.classList.toggle('open'); $('#calcResults').innerHTML=''; };
-$('#calcRunBtn').onclick=runHDDCalc;
-$('#calcSize').onkeydown=e=>{ if(e.key==='Enter') runHDDCalc(); };
-$('#calcClearBtn').onclick=()=>{ $('#calcSize').value=''; $('#calcResults').innerHTML=''; };
+$('#hddCalcToggle').onclick=()=>$('#hddCalcPanel').classList.toggle('open');
+// HDD modal
 $('#closeHDD').onclick=$('#cancelHDD').onclick=()=>{ $('#hddOverlay').classList.remove('show'); $('#hddModalErr').textContent=''; };
 $('#hddOverlay').onclick=e=>{ if(e.target===$('#hddOverlay')){ $('#hddOverlay').classList.remove('show'); $('#hddModalErr').textContent=''; } };
 $('#saveHDDBtn').onclick=saveHDDEntry;
 $('#deleteHDDBtn').onclick=()=>confirmDeleteHDD(hddEditId);
+// File modal
+$('#closeHDDFile').onclick=$('#cancelHDDFile').onclick=()=>{ $('#hddFileOverlay').classList.remove('show'); $('#hddFileErr').textContent=''; };
+$('#hddFileOverlay').onclick=e=>{ if(e.target===$('#hddFileOverlay')){ $('#hddFileOverlay').classList.remove('show'); } };
+$('#saveHDDFileBtn').onclick=saveHDDFileEntry;
+$('#deleteHDDFileBtn').onclick=()=>{ if(hddFileEditHid&&hddFileEditFid) confirmDeleteHDDFile(hddFileEditHid,hddFileEditFid); };
+// Calculator tab switching
+document.querySelectorAll('.hdd-calc-tab').forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll('.hdd-calc-tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.hdd-calc-body').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const tabMap={move:'calcTabMove',merge:'calcTabMerge',space:'calcTabSpace'};
+    const target=$('#'+(tabMap[btn.dataset.tab]||btn.dataset.tab)); if(target) target.classList.add('active');
+  };
+});
+// Calculator buttons
+$('#calcMoveRunBtn').onclick=runCalcMove;
+$('#calcMoveClearBtn').onclick=()=>{ $('#calcMoveFrom').value=''; $('#calcMoveTo').value=''; $('#calcMoveFiles').style.display='none'; $('#calcMoveResult').innerHTML=''; $('#calcMoveResult').classList.remove('show'); };
+$('#calcMergeRunBtn').onclick=runCalcMerge;
+$('#calcSpaceRunBtn').onclick=runCalcSpace;
+$('#calcSpaceClearBtn').onclick=()=>{ $('#calcSize').value=''; $('#calcSpaceResult').innerHTML=''; $('#calcSpaceResult').classList.remove('show'); };
+$('#calcSize').onkeydown=e=>{ if(e.key==='Enter') runCalcSpace(); };
 
 // ---------- kunci akses (username/password, sisi-browser) ----------
 const AUTH={user:'',salt:'',hash:'',ok:false};
