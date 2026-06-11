@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -1634,9 +1632,14 @@ function undo(){
 
 // ---------- deteksi duplikat ----------
 function normalizeLink(l){
-  let s=String(l||'').toLowerCase().trim();
+  let s=String(l||'').trim();
+  // strip karakter invisible: zero-width space, BOM, non-breaking space, dll.
+  // eslint-disable-next-line no-control-regex
+  s=s.replace(/[\u0000-\u001F\u007F-\u009F\u00A0\u200B-\u200F\u2028\u2029\uFEFF]/g,'');
+  s=s.toLowerCase();
   s=s.replace(/^https?:\/\//,'');   // buang protokol
   s=s.replace(/^www\./,'');         // buang www.
+  s=s.replace(/\?.*$/,'');          // buang query string
   s=s.replace(/#.*/,'');            // buang fragment (#...)
   s=s.replace(/\/+$/,'');           // buang trailing slash
   return s;
@@ -1651,6 +1654,22 @@ function markDuplicates(){
   }
   return dup;
 }
+// Debug helper — jalankan debugDups() di console browser untuk diagnosa link yang tidak terdeteksi dobel
+window.debugDups=function(){
+  const map=new Map();
+  DATA.forEach((r,i)=>{
+    const k=normalizeLink(r.link);
+    if(map.has(k)){
+      const prev=map.get(k);
+      console.warn(`DOBEL row ${i} vs row ${prev.i}`);
+      console.warn(`  row ${i} raw:`,JSON.stringify(r.link));
+      console.warn(`  row ${i} codepoints:`,[...r.link].map(c=>c.codePointAt(0).toString(16)).join(' '));
+      console.warn(`  row ${prev.i} raw:`,JSON.stringify(prev.raw));
+      console.warn(`  normalized key:`,k);
+    } else { map.set(k,{i,raw:r.link}); }
+  });
+  console.log('Total distinct keys:',map.size,'dari',DATA.length,'baris');
+};
 function selectDuplicates(){
   const n=markDuplicates();
   refreshFilterOptions(); renderKPI();
