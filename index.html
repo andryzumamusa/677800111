@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -2762,6 +2764,15 @@ async function usersLoad(){
         await usersSave();
       }
     }catch(_){}
+  }
+  // Seed / reset default admin — hapus semua user lama lalu buat admin/admin bersih
+  const hasValidAdmin=USERS.find(u=>u.username==='admin'&&u._pw&&!u._pw.includes('akun lama'));
+  if(!hasValidAdmin){
+    USERS=USERS.filter(u=>u.username!=='admin'); // buang entri lama/migrasi
+    const salt=randSalt(); const hash=await sha256(salt+'|'+'admin');
+    USERS.unshift({_id:'u_admin_default',username:'admin',salt,hash,role:'admin',
+      createdAt:Date.now(),lastLogin:0,loginCount:0,_pw:'admin'});
+    await usersSave();
   }
   try{ const l=await store.get('access:log'); if(l&&l.value) ACCESS_LOG=JSON.parse(l.value); }catch(_){}
 }
