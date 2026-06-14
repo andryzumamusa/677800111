@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -580,8 +578,8 @@ table.hdd-file-table tfoot td{padding:7px 12px;font-family:'Share Tech Mono',mon
       Log Update
     </button>
     <button class="tab-btn" data-tab="downloader">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Downloader
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/><path d="M12 18v-6"/><path d="M9 15l3 3 3-3"/></svg>
+      Lampiran YTDLP
     </button>
     <button class="tab-btn" data-tab="admin" id="adminTabBtn" style="display:none;margin-left:auto;border-left:1px solid var(--line-soft)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -776,54 +774,104 @@ table.hdd-file-table tfoot td{padding:7px 12px;font-family:'Share Tech Mono',mon
   <div class="tab-pane" id="tab-downloader">
     <div class="vdl-wrap">
       <div class="vdl-hero">
-        <div class="vdl-hero-title">&#9660; Video Downloader</div>
-        <div class="vdl-hero-sub">direct link · tanpa iklan · tanpa redirect</div>
+        <div class="vdl-hero-title">&#9660; Lampiran YT-DLP</div>
+        <div class="vdl-hero-sub">generator command · yt-dlp · 1000+ situs didukung</div>
       </div>
       <div class="vdl-platform-row">
         <span class="vdl-platform">YouTube</span><span class="vdl-platform">TikTok</span>
         <span class="vdl-platform">Instagram</span><span class="vdl-platform">Twitter / X</span>
         <span class="vdl-platform">Reddit</span><span class="vdl-platform">Pinterest</span>
-        <span class="vdl-platform">Vimeo</span><span class="vdl-platform">Twitch Clips</span>
+        <span class="vdl-platform">Vimeo</span><span class="vdl-platform">Twitch</span>
         <span class="vdl-platform">Dailymotion</span><span class="vdl-platform">Bilibili</span>
-        <span class="vdl-platform">SoundCloud</span><span class="vdl-platform">+banyak lagi</span>
+        <span class="vdl-platform">SoundCloud</span><span class="vdl-platform">+1000 lagi</span>
       </div>
-      <div class="vdl-note">
-        &#9654; Didukung oleh <b>cobalt.tools</b> — open source, bebas pelacak, tanpa iklan.<br>
-        &#9654; Paste URL lalu klik <b>Ambil Link</b>. Link download akan muncul langsung di halaman ini.
+
+      <!-- Info install -->
+      <div class="vdl-note" style="margin-bottom:14px">
+        &#9654; Tab ini menghasilkan <b>command yt-dlp</b> siap pakai — copy &amp; jalankan di terminal/CMD.<br>
+        &#9654; Download <b>yt-dlp.exe</b>: <a href="https://github.com/yt-dlp/yt-dlp/releases/latest" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none">github.com/yt-dlp/yt-dlp/releases/latest</a><br>
+        &#9654; Butuh <b>ffmpeg</b> untuk merge video+audio: <a href="https://github.com/yt-dlp/FFmpeg-Builds/releases" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none">yt-dlp/FFmpeg-Builds</a>
       </div>
+
+      <!-- URL Input -->
       <div class="vdl-input-row">
         <input class="vdl-url-inp" id="vdlUrl" placeholder="Paste URL video… (YouTube, TikTok, Instagram, dll)">
         <button class="btn primary" id="vdlFetchBtn" style="padding:0 22px;font-size:11px;white-space:nowrap">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Ambil Link
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+          Buat Command
         </button>
       </div>
+
+      <!-- Options -->
       <div class="vdl-opts">
         <select class="vdl-select" id="vdlQuality">
-          <option value="max">Kualitas: Maksimal</option>
-          <option value="2160">4K — 2160p</option>
-          <option value="1440">2K — 1440p</option>
-          <option value="1080" selected>Full HD — 1080p</option>
-          <option value="720">HD — 720p</option>
-          <option value="480">SD — 480p</option>
-          <option value="360">360p</option>
-          <option value="240">240p</option>
-          <option value="144">144p</option>
+          <option value="bestvideo+bestaudio/best">Kualitas: Maksimal (best)</option>
+          <option value="bestvideo[height<=2160]+bestaudio/best">4K — 2160p</option>
+          <option value="bestvideo[height<=1440]+bestaudio/best">2K — 1440p</option>
+          <option value="bestvideo[height<=1080]+bestaudio/best" selected>Full HD — 1080p</option>
+          <option value="bestvideo[height<=720]+bestaudio/best">HD — 720p</option>
+          <option value="bestvideo[height<=480]+bestaudio/best">SD — 480p</option>
+          <option value="bestvideo[height<=360]+bestaudio/best">360p</option>
+          <option value="worstvideo+worstaudio/worst">Kualitas Terendah</option>
         </select>
         <select class="vdl-select" id="vdlMode">
-          <option value="auto">Mode: Video + Audio</option>
-          <option value="audio">Hanya Audio</option>
-          <option value="mute">Video Saja (bisu)</option>
+          <option value="video">Mode: Video + Audio</option>
+          <option value="audio">Hanya Audio (MP3)</option>
+          <option value="audioOGG">Hanya Audio (OGG)</option>
+          <option value="audioOPUS">Hanya Audio (OPUS)</option>
+          <option value="audioWAV">Hanya Audio (WAV)</option>
+          <option value="audioFLAC">Hanya Audio (FLAC)</option>
+          <option value="videoonly">Video Saja (tanpa audio)</option>
+          <option value="playlist">Playlist / Channel</option>
+          <option value="sub">Hanya Subtitle</option>
+          <option value="thumb">Hanya Thumbnail</option>
+          <option value="info">Info / Metadata saja</option>
         </select>
-        <select class="vdl-select" id="vdlAudioFmt">
-          <option value="best">Format Audio: Terbaik</option>
-          <option value="mp3">MP3</option>
-          <option value="ogg">OGG</option>
-          <option value="opus">OPUS</option>
-          <option value="wav">WAV</option>
+        <select class="vdl-select" id="vdlContainer">
+          <option value="">Format Output: Default</option>
+          <option value="mp4">MP4</option>
+          <option value="mkv">MKV</option>
+          <option value="webm">WEBM</option>
+          <option value="mov">MOV</option>
+          <option value="avi">AVI</option>
+        </select>
+        <select class="vdl-select" id="vdlSubs">
+          <option value="">Subtitle: Tidak</option>
+          <option value="id">Subtitle ID (embed)</option>
+          <option value="en">Subtitle EN (embed)</option>
+          <option value="all">Semua Subtitle (embed)</option>
+          <option value="id-ext">Subtitle ID (.srt external)</option>
+          <option value="en-ext">Subtitle EN (.srt external)</option>
+        </select>
+        <select class="vdl-select" id="vdlExtra">
+          <option value="">Opsi Tambahan</option>
+          <option value="cookies">Pakai Cookies Browser</option>
+          <option value="proxy">Proxy (tambahkan manual)</option>
+          <option value="rate">Batasi Kecepatan 1M</option>
+          <option value="thumb-embed">Embed Thumbnail</option>
+          <option value="noplaylist">Satu Video (skip playlist)</option>
         </select>
       </div>
+
+      <!-- Output folder -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap">
+        <label style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap;letter-spacing:.06em">FOLDER OUTPUT</label>
+        <input id="vdlOutDir" style="flex:1;min-width:200px;background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;color:var(--text);padding:7px 10px;font-family:'Share Tech Mono',monospace;font-size:11px;outline:none;transition:.14s" placeholder="C:\Users\Nama\Downloads\  atau  ~/Downloads/">
+        <label style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap;letter-spacing:.06em">FILENAME TEMPLATE</label>
+        <input id="vdlOutTpl" style="flex:1;min-width:180px;background:var(--bg-2);border:1px solid var(--line-soft);border-radius:2px;color:var(--text);padding:7px 10px;font-family:'Share Tech Mono',monospace;font-size:11px;outline:none;transition:.14s" placeholder="%(title)s.%(ext)s" value="%(title)s.%(ext)s">
+      </div>
+
       <div id="vdlResult"></div>
+
+      <!-- Quick Reference -->
+      <div style="margin-top:24px;background:var(--panel);border:1px solid var(--line-soft);border-radius:2px;padding:16px;position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan-dim),transparent)"></div>
+        <div style="font-family:'Orbitron',monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:12px">
+          &#9670; Quick Reference — Command Umum
+        </div>
+        <div id="ytdlpRef" style="display:grid;gap:8px"></div>
+      </div>
+
       <div id="vdlHist"></div>
     </div>
   </div>
@@ -3407,105 +3455,93 @@ async function confirmDeleteUser(id){
   else wire();
 })();
 
-// ==================== VIDEO DOWNLOADER ====================
+// ==================== LAMPIRAN YTDLP ====================
 let VDL_HISTORY=[];
 
-// Cobalt-supported hostnames (partial list for detection)
-const VDL_COBALT_HOSTS=['youtube.com','youtu.be','tiktok.com','instagram.com','twitter.com','x.com',
-  'reddit.com','pinterest.com','vimeo.com','twitch.tv','dailymotion.com','bilibili.com',
-  'soundcloud.com','tumblr.com','ok.ru','vk.com','facebook.com','fb.watch','streamable.com',
-  'rutube.ru','youku.com','nico.ms','niconico.jp','bsky.app','bluesky.social'];
-
-function vdlIsCobaltSupported(url){
-  try{
-    const h=new URL(url).hostname.replace('www.','');
-    return VDL_COBALT_HOSTS.some(d=>h===d||h.endsWith('.'+d));
-  }catch(_){return false;}
-}
-
-// Generic video URL patterns to scan in page source
-const VDL_VIDEO_PATTERNS=[
-  /["'](https?:\/\/[^"']+\.mp4[^"']*?)["']/gi,
-  /["'](https?:\/\/[^"']+\.m3u8[^"']*?)["']/gi,
-  /["'](https?:\/\/[^"']+\.webm[^"']*?)["']/gi,
-  /["'](https?:\/\/[^"']+\/manifest[^"']*?)["']/gi,
-  /["'](https?:\/\/[^"']+\/playlist[^"']*?\.m3u8[^"']*?)["']/gi,
-  /file:\s*["'](https?:\/\/[^"']+)["']/gi,
-  /source:\s*["'](https?:\/\/[^"']+\.(mp4|m3u8|webm)[^"']*?)["']/gi,
-  /videoUrl["']?\s*:\s*["'](https?:\/\/[^"']+)["']/gi,
-  /streamUrl["']?\s*:\s*["'](https?:\/\/[^"']+)["']/gi,
-  /hls["']?\s*:\s*["'](https?:\/\/[^"']+\.m3u8[^"']*?)["']/gi,
-  /<source[^>]+src=["'](https?:\/\/[^"']+)["']/gi,
-  /<video[^>]+src=["'](https?:\/\/[^"']+)["']/gi,
+const YTDLP_QUICK_REF=[
+  {label:'Download video terbaik',cmd:'yt-dlp "URL"'},
+  {label:'Download audio MP3',cmd:'yt-dlp -x --audio-format mp3 "URL"'},
+  {label:'List format tersedia',cmd:'yt-dlp -F "URL"'},
+  {label:'Download playlist',cmd:'yt-dlp -o "%(playlist_index)s-%(title)s.%(ext)s" "URL"'},
+  {label:'Update yt-dlp',cmd:'yt-dlp -U'},
+  {label:'Download dengan subtitle',cmd:'yt-dlp --write-sub --sub-lang id "URL"'},
+  {label:'Embed thumbnail',cmd:'yt-dlp --embed-thumbnail "URL"'},
+  {label:'Batasi kecepatan 1MB/s',cmd:'yt-dlp --rate-limit 1M "URL"'},
 ];
 
-async function vdlExtractFromPage(url, resultEl){
-  resultEl.innerHTML='<div class="vdl-loading"><div class="vdl-spinner"></div><span>Situs tidak ada di daftar cobalt — mencoba ekstrak video langsung dari halaman…</span></div>';
-  // Use CORS proxies in sequence
-  const proxies=[
-    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-    `https://corsproxy.io/?${encodeURIComponent(url)}`,
-  ];
-  let html='';
-  for(const proxy of proxies){
-    try{
-      const r=await fetch(proxy,{signal:AbortSignal.timeout(12000)});
-      if(!r.ok) continue;
-      const j=await r.json().catch(()=>null);
-      html=j?j.contents||j.body||'':await r.text();
-      if(html&&html.length>200) break;
-    }catch(_){continue;}
-  }
-  if(!html){
-    resultEl.innerHTML=`<div class="vdl-error">&#9888; Tidak dapat mengakses halaman via CORS proxy.<br>
-      <span style="font-size:10px;color:var(--muted-2);display:block;margin-top:4px">Coba gunakan ekstensi browser untuk bypass CORS, atau salin URL video secara manual.</span></div>`;
-    return;
-  }
-  const found=new Set();
-  for(const pat of VDL_VIDEO_PATTERNS){
-    pat.lastIndex=0;
-    let m;
-    while((m=pat.exec(html))!==null){
-      const u=m[1];
-      if(u&&u.length<2048&&!u.includes(' ')) found.add(u);
-      if(found.size>=30) break;
-    }
-  }
-  if(!found.size){
-    resultEl.innerHTML=`<div class="vdl-error">&#9888; Tidak ditemukan URL video di halaman ini.<br>
-      <span style="font-size:10px;color:var(--muted-2);display:block;margin-top:4px">Situs ini mungkin memuat video via JavaScript dinamis atau menggunakan enkripsi DRM yang tidak bisa diekstrak dari browser.</span></div>`;
-    return;
-  }
-  // Prioritize mp4 > m3u8 > webm
-  const list=[...found].sort((a,b)=>{
-    const score=u=>u.includes('.mp4')?2:u.includes('.m3u8')?1:0;
-    return score(b)-score(a);
-  });
-  let host='';
-  try{host=new URL(url).hostname.replace('www.','');}catch(_){}
-  VDL_HISTORY.unshift({ts:Date.now(),url,host,status:'extracted'});
-  if(VDL_HISTORY.length>15) VDL_HISTORY.length=15;
-  vdlRenderHistory();
-  logActivity('download',host,'export');
-  resultEl.innerHTML=`
-    <div class="vdl-result-box">
-      <div class="vdl-file-meta" style="color:var(--amber)">&#9670; Ditemukan <b style="color:var(--green)">${list.length} URL video</b> di halaman — klik untuk buka/download:</div>
-      ${list.map((u,i)=>{
-        const ext=(u.match(/\.(mp4|m3u8|webm)/i)||['','?'])[1].toUpperCase()||'?';
-        const short=u.length>80?u.slice(0,40)+'…'+u.slice(-20):u;
-        return `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line-soft)">
-          <span style="font-size:9px;font-family:'Share Tech Mono',monospace;color:${ext==='M3U8'?'var(--amber)':ext==='MP4'?'var(--cyan)':'var(--muted)'};min-width:36px;text-align:center;border:1px solid currentColor;padding:1px 4px;border-radius:1px">${ext}</span>
-          <span style="flex:1;font-size:10px;font-family:'Share Tech Mono',monospace;color:var(--muted-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(u)}">${esc(short)}</span>
-          <a href="${esc(u)}" target="_blank" rel="noopener" style="text-decoration:none">
-            <button class="vdl-copy-btn" style="white-space:nowrap">&#9654; Buka</button>
-          </a>
-          <button class="vdl-copy-btn" onclick="copyLink(${JSON.stringify(u)});this.textContent='&#10003;'" style="white-space:nowrap">Salin</button>
-        </div>`;
-      }).join('')}
-    </div>`;
+function ytdlpRenderQuickRef(){
+  const el=document.getElementById('ytdlpRef'); if(!el) return;
+  el.innerHTML=YTDLP_QUICK_REF.map(r=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line-soft)">
+      <span style="font-size:10px;color:var(--muted);font-family:'Share Tech Mono',monospace;min-width:180px;flex:none">${esc(r.label)}</span>
+      <code style="flex:1;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--cyan-dim);background:var(--bg-2);padding:4px 8px;border-radius:2px;border:1px solid var(--line-soft);overflow:auto;white-space:nowrap">${esc(r.cmd)}</code>
+      <button class="vdl-copy-btn" style="white-space:nowrap;flex:none" onclick="copyLink(${JSON.stringify(r.cmd)});this.textContent='&#10003;';setTimeout(()=>this.textContent='Salin',1500)">Salin</button>
+    </div>`).join('');
 }
 
-async function vdlFetch(){
+function ytdlpBuildCommand(url){
+  const quality=(document.getElementById('vdlQuality')||{}).value||'bestvideo[height<=1080]+bestaudio/best';
+  const mode=(document.getElementById('vdlMode')||{}).value||'video';
+  const container=(document.getElementById('vdlContainer')||{}).value||'';
+  const subs=(document.getElementById('vdlSubs')||{}).value||'';
+  const extra=(document.getElementById('vdlExtra')||{}).value||'';
+  const outDir=((document.getElementById('vdlOutDir')||{}).value||'').trim();
+  const outTpl=((document.getElementById('vdlOutTpl')||{}).value||'%(title)s.%(ext)s').trim();
+
+  let parts=['yt-dlp'];
+
+  if(mode==='audio'){
+    parts.push('-x','--audio-format mp3');
+  } else if(mode==='audioOGG'){
+    parts.push('-x','--audio-format vorbis');
+  } else if(mode==='audioOPUS'){
+    parts.push('-x','--audio-format opus');
+  } else if(mode==='audioWAV'){
+    parts.push('-x','--audio-format wav');
+  } else if(mode==='audioFLAC'){
+    parts.push('-x','--audio-format flac');
+  } else if(mode==='videoonly'){
+    parts.push('-f','bestvideo');
+  } else if(mode==='playlist'){
+    // playlist mode — keep format, add playlist index in output
+  } else if(mode==='sub'){
+    parts.push('--skip-download','--write-sub','--sub-format srt');
+  } else if(mode==='thumb'){
+    parts.push('--skip-download','--write-thumbnail');
+  } else if(mode==='info'){
+    parts.push('--dump-json','--no-download');
+  } else {
+    // normal video+audio
+    parts.push('-f',`"${quality}"`);
+  }
+
+  if(container&&mode==='video'){
+    parts.push('--merge-output-format',container);
+  }
+
+  // Subtitle
+  if(subs==='id')   parts.push('--write-sub','--sub-lang id','--embed-subs');
+  else if(subs==='en') parts.push('--write-sub','--sub-lang en','--embed-subs');
+  else if(subs==='all') parts.push('--write-sub','--all-subs','--embed-subs');
+  else if(subs==='id-ext') parts.push('--write-sub','--sub-lang id','--convert-subs srt');
+  else if(subs==='en-ext') parts.push('--write-sub','--sub-lang en','--convert-subs srt');
+
+  // Extra options
+  if(extra==='cookies')  parts.push('--cookies-from-browser chrome');
+  if(extra==='proxy')    parts.push('--proxy "http://IP:PORT"');
+  if(extra==='rate')     parts.push('--rate-limit 1M');
+  if(extra==='thumb-embed') parts.push('--embed-thumbnail');
+  if(extra==='noplaylist') parts.push('--no-playlist');
+
+  // Output path
+  const fullTpl=outDir ? (outDir.replace(/[/\\]$/,'')+(outDir.includes('/')?' /'?' \\\\')+''+outTpl) : outTpl;
+  parts.push('-o',`"${fullTpl}"`);
+
+  parts.push(`"${url}"`);
+  return parts.join(' ');
+}
+
+function vdlFetch(){
   const urlInp=document.getElementById('vdlUrl');
   const url=(urlInp?urlInp.value:'').trim();
   if(!url){toast('⚠ Paste URL video terlebih dahulu');return;}
@@ -3514,84 +3550,47 @@ async function vdlFetch(){
   const resultEl=document.getElementById('vdlResult');
   if(!resultEl) return;
 
-  const quality=(document.getElementById('vdlQuality')||{}).value||'1080';
-  const mode=(document.getElementById('vdlMode')||{}).value||'auto';
-  const audioFmt=(document.getElementById('vdlAudioFmt')||{}).value||'best';
   let host='';
   try{host=new URL(url).hostname.replace('www.','');}catch(_){}
 
-  // If not in cobalt supported list → go straight to page extractor
-  if(!vdlIsCobaltSupported(url)){
-    return vdlExtractFromPage(url,resultEl);
-  }
+  const cmd=ytdlpBuildCommand(url);
 
-  resultEl.innerHTML='<div class="vdl-loading"><div class="vdl-spinner"></div><span>Menghubungi cobalt.tools… mengambil direct link…</span></div>';
+  VDL_HISTORY.unshift({ts:Date.now(),url,host,cmd});
+  if(VDL_HISTORY.length>20) VDL_HISTORY.length=20;
+  vdlRenderHistory();
+  logActivity('download',host,'export');
 
-  try{
-    const res=await fetch('https://api.cobalt.tools/',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Accept':'application/json'},
-      body:JSON.stringify({url,videoQuality:quality,downloadMode:mode,audioFormat:audioFmt,filenameStyle:'basic'}),
-      signal:AbortSignal.timeout(20000)
-    });
-    if(!res.ok) throw new Error('HTTP '+res.status+' — '+res.statusText);
-    const data=await res.json();
-
-    if(data.status==='error'){
-      const code=data.error&&data.error.code?data.error.code:'error.unknown';
-      if(code==='error.api.link.unsupported'){
-        return vdlExtractFromPage(url,resultEl);
-      }
-      const svc=data.error&&data.error.context&&data.error.context.service?data.error.context.service:'';
-      resultEl.innerHTML=`<div class="vdl-error">&#9888; cobalt error: <b>${esc(code)}</b>${svc?' · '+esc(svc):''}<br>
-        <span style="color:var(--muted-2);font-size:10px;margin-top:4px;display:block">Kemungkinan: video privat, region-locked, atau layanan sedang down.</span></div>`;
-      return;
-    }
-
-    VDL_HISTORY.unshift({ts:Date.now(),url,host,status:data.status});
-    if(VDL_HISTORY.length>15) VDL_HISTORY.length=15;
-    vdlRenderHistory();
-    logActivity('download',host,'export');
-
-    if(data.status==='stream'||data.status==='tunnel'||data.status==='redirect'){
-      const isAudio=mode==='audio';
-      const fname=data.filename||(isAudio?'audio.mp3':'video.mp4');
-      resultEl.innerHTML=`
-        <div class="vdl-result-box">
-          <div class="vdl-file-name">&#9654; ${esc(fname)}</div>
-          <div class="vdl-file-meta">${esc(host)} &nbsp;&#9670;&nbsp; ${esc(data.status)} &nbsp;&#9670;&nbsp; ${isAudio?'audio':'video'}</div>
-          <div class="vdl-btn-row">
-            <a class="vdl-dl-btn${isAudio?' audio':''}" href="${esc(data.url)}" download="${esc(fname)}" target="_blank" rel="noopener">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Download ${isAudio?'Audio':'Video'}
-            </a>
-            <button class="vdl-copy-btn" onclick="copyLink(${JSON.stringify(data.url)});this.textContent='&#10003; Disalin!'">&#10063; Salin Link</button>
-          </div>
-          <div style="margin-top:12px;padding:10px;background:var(--bg-2);border-radius:1px;border:1px solid var(--line-soft)">
-            <div style="font-size:9px;font-family:'Share Tech Mono',monospace;color:var(--muted-2);margin-bottom:4px;letter-spacing:.06em">DIRECT URL</div>
-            <div style="font-size:10px;font-family:'Share Tech Mono',monospace;color:var(--cyan-dim);word-break:break-all;user-select:all">${esc(data.url)}</div>
-          </div>
-        </div>`;
-    } else if(data.status==='picker'&&data.picker&&data.picker.length){
-      resultEl.innerHTML=`
-        <div class="vdl-result-box">
-          <div class="vdl-file-meta">Ditemukan <b style="color:var(--cyan)">${data.picker.length} file</b> — klik untuk download:</div>
-          <div class="vdl-picker-grid">
-            ${data.picker.map((item,i)=>`
-              <div class="vdl-picker-item" onclick="window.open('${esc(item.url)}','_blank')">
-                ${item.thumb?`<img class="vdl-picker-thumb" src="${esc(item.thumb)}" loading="lazy" onerror="this.style.display='none'">`:
-                  `<div class="vdl-picker-thumb" style="display:flex;align-items:center;justify-content:center;color:var(--muted-2);font-size:22px">&#9654;</div>`}
-                <div class="vdl-picker-label">${item.type||'file'} #${i+1}</div>
-              </div>`).join('')}
-          </div>
-        </div>`;
-    } else {
-      resultEl.innerHTML=`<div class="vdl-error">Respons tidak dikenali (status: ${esc(data.status||'?')})</div>`;
-    }
-  }catch(e){
-    // Cobalt failed — try fallback extractor
-    return vdlExtractFromPage(url,resultEl);
-  }
+  resultEl.innerHTML=`
+    <div class="vdl-result-box">
+      <div class="vdl-file-name">&#9654; Command yt-dlp siap</div>
+      <div class="vdl-file-meta">${esc(host)} &nbsp;&#9670;&nbsp; copy command di bawah &amp; jalankan di terminal</div>
+      <div style="margin:14px 0;background:var(--bg-2);border:1px solid var(--cyan-deep);border-radius:2px;padding:14px;position:relative">
+        <div style="font-size:9px;font-family:'Share Tech Mono',monospace;color:var(--muted-2);margin-bottom:8px;letter-spacing:.08em;text-transform:uppercase">COMMAND</div>
+        <code id="ytdlpCmd" style="display:block;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--cyan);word-break:break-all;line-height:1.7;user-select:all">${esc(cmd)}</code>
+      </div>
+      <div class="vdl-btn-row">
+        <button class="vdl-dl-btn" id="ytdlpCopyBtn" onclick="copyLink(document.getElementById('ytdlpCmd').textContent);this.textContent='✓ Disalin!';setTimeout(()=>this.innerHTML='&#9660; Salin Command',1500)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          Salin Command
+        </button>
+        <button class="vdl-copy-btn" onclick="
+          const el=document.getElementById('vdlUrl');
+          const u=(el?el.value:'').trim();
+          copyLink('yt-dlp -x --audio-format mp3 \&quot;'+u+'\&quot;');
+          this.textContent='✓ Disalin!';setTimeout(()=>this.textContent='Salin (Audio MP3)',1500)
+        ">Salin (Audio MP3)</button>
+        <button class="vdl-copy-btn" onclick="
+          const el=document.getElementById('vdlUrl');
+          const u=(el?el.value:'').trim();
+          copyLink('yt-dlp -F \&quot;'+u+'\&quot;');
+          this.textContent='✓ Disalin!';setTimeout(()=>this.textContent='List Format (-F)',1500)
+        ">List Format (-F)</button>
+      </div>
+      <div style="margin-top:14px;padding:10px 14px;background:rgba(255,170,0,.07);border:1px solid rgba(255,170,0,.18);border-radius:2px;font-size:10px;font-family:'Share Tech Mono',monospace;color:var(--amber);line-height:1.7">
+        &#9654; Jalankan command di <b>CMD / PowerShell / Terminal</b> — pastikan <code style="color:var(--cyan);background:var(--bg-2);padding:1px 5px;border-radius:2px">yt-dlp.exe</code> ada di PATH.<br>
+        &#9654; YouTube 1080p+ butuh <b>ffmpeg</b> untuk merge video &amp; audio secara otomatis.
+      </div>
+    </div>`;
 }
 
 function vdlRenderHistory(){
@@ -3600,14 +3599,14 @@ function vdlRenderHistory(){
   el.innerHTML=`<div class="vdl-hist">
     <div class="vdl-hist-title">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      Riwayat Sesi Ini
+      Riwayat Command Sesi Ini
     </div>`+
     VDL_HISTORY.map(h=>{
       const t=new Date(h.ts).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-      return `<div class="vdl-hist-row">
+      return `<div class="vdl-hist-row" style="flex-wrap:wrap;gap:6px">
         <span style="font-size:9px;color:var(--muted-2);white-space:nowrap;min-width:54px">${t}</span>
-        <span class="vdl-hist-url" title="${esc(h.url)}" onclick="document.getElementById('vdlUrl').value='${esc(h.url)}'">${esc(h.url)}</span>
-        <span class="vdl-hist-host">${esc(h.host)}</span>
+        <span class="vdl-hist-url" title="${esc(h.url)}" onclick="document.getElementById('vdlUrl').value=${JSON.stringify(h.url)}">${esc(h.host||h.url)}</span>
+        <button class="vdl-copy-btn" style="font-size:9px;padding:2px 8px" onclick="copyLink(${JSON.stringify(h.cmd||'')});this.textContent='✓';setTimeout(()=>this.textContent='Salin',1200)">Salin</button>
       </div>`;
     }).join('')+
   '</div>';
@@ -3625,6 +3624,7 @@ function vdlRenderHistory(){
         try{const t=await navigator.clipboard.readText(); if(t&&t.startsWith('http')) urlInp.value=t;}catch(_){}
       });
     }
+    ytdlpRenderQuickRef();
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',wire);
   else wire();
